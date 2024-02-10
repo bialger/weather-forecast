@@ -81,7 +81,7 @@ jobs:
 
       - name: Build tests target
         run: |
-          cmake --build cmake-build-debug --target weather_tests
+          cmake --build cmake-build-debug --target weather-forecast_tests
 
       - name: Run program
         shell: bash
@@ -100,9 +100,9 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
               cd Debug
-              ./weather_tests.exe
+              ./weather-forecast_tests.exe
           else
-              ./weather_tests
+              ./weather-forecast_tests
           fi
 
   memory-leaks:
@@ -121,9 +121,9 @@ jobs:
 
       - name: Build tests target
         run: |
-          cmake --build cmake-build --target weather_tests
+          cmake --build cmake-build --target weather-forecast_tests
 
       - name: Run valgrind
         working-directory: ./cmake-build/tests
         run: |
-          valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./weather_tests
+          valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./weather-forecast_tests
