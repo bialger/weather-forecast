@@ -52,17 +52,17 @@ classDiagram
         +Parse(int argc, char[][] argv, ErrorOutput error_output=()) bool
         +Help() bool
         +HelpDescription() string
-        +AddHelp(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~bool~ &
-        +AddHelp(const char[] long_name, const char[] description="") ConcreteArgumentBuilder~bool~ &
-        +AddArgument~T~(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
-        +AddArgument~T~(const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
+        %%+AddHelp(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~bool~ &
+        %%+AddHelp(const char[] long_name, const char[] description="") ConcreteArgumentBuilder~bool~ &
+        %%+AddArgument~T~(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
+        %%+AddArgument~T~(const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
         +GetValue~T~(const char[] long_name, size_t index=0) T
         -Parse_(vector~string~ args, ErrorOutput error_output) bool
         -GetLongKeys(string current_argument) vector~string~
-        -ParsePositionalArguments(vector~string~ argv, const vector~size_t~ & used_positions) void
+        %%-ParsePositionalArguments(vector~string~ argv, const vector~size_t~ & used_positions) void
         -HandleErrors(ErrorOutput error_output) bool
         -RefreshArguments() void
-        -AddArgument_~T~(char short_name, const char[] long_name, const char[] description) ConcreteArgumentBuilder~T~ &
+        %%-AddArgument_~T~(char short_name, const char[] long_name, const char[] description) ConcreteArgumentBuilder~T~ &
         -GetValue_~T~(const char* long_name, size_t index) T
     }
     class Argument {
@@ -74,7 +74,7 @@ classDiagram
         +GetInfo()* ArgumentInformation
         +GetUsedValues()* size_t
         +ClearStored()* void
-        #ObtainValue(vector~string~ argv, string& value_string, vector~size_t~ & used_values, size_t position)* size_t
+        %%#ObtainValue(vector~string~ argv, string& value_string, vector~size_t~ & used_values, size_t position)* size_t
     }
     class ArgumentBuilder {
         <<interface>>
@@ -98,7 +98,7 @@ classDiagram
         +GetInfo() ArgumentInformation
         +GetUsedValues() size_t
         +ClearStored() void
-        #ObtainValue(vector~string~ argv, string& value_string, vector~size_t~ & used_values, size_t position) size_t
+        %%#ObtainValue(vector~string~ argv, string& value_string, vector~size_t~ & used_values, size_t position) size_t
     }
     class ConcreteArgumentBuilder~T~ {
         -ArgumentInformation info_;
