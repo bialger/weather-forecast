@@ -8,6 +8,6 @@ add_library(argparser STATIC ArgParser.cpp
 
 add_subdirectory(basic)
 
-target_link_libraries(argparser PUBLIC argparser_basic)
+target_link_libraries(argparser PRIVATE argparser_basic)
 
 target_include_directories(argparser PUBLIC ${PROJECT_SOURCE_DIR})

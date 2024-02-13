@@ -27,8 +27,8 @@ title: Diagram of the system of the project
 flowchart LR
     subgraph Atomic systems
         nodeArgParser([ArgParser])
+      nodeWeather([Weather])
         subgraph Third-party libraries
-          nodeWeather([Weather])
           nodeCPR([C++ Requests])
           nodeJSON([JSON])
           nodeFTXUI([FTXUI])
@@ -41,8 +41,7 @@ flowchart LR
     nodeForecast --> nodeMain
     nodeWeather --> nodeForecast
     nodeCPR --> nodeForecast
-    nodeJSON --> nodeForecast
-    nodeFTXUI --> nodeForecast
+    nodeJSON --> nodeWeather
     nodeFTXUI --> nodeMain
 ```
 

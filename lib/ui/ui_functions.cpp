@@ -1,7 +1,7 @@
 #include "ui_functions.hpp"
 #include "lib/argparser/ArgParser.hpp"
 
-int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out) {
+int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, std::istream& in) {
   ErrorOutput error_output = {out, true};
   ArgumentParser::ArgParser parser("weather-forecast");
 

@@ -5,6 +5,6 @@
 #include <vector>
 #include <string>
 
-int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out);
+int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, std::istream& in);
 
 #endif //UI_FUNCTIONS_HPP_

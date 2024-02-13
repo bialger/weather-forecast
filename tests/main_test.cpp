@@ -7,11 +7,13 @@
 
 TEST_F(WeatherForecastIntegrationTestSuite, NegativeTest1) {
   std::ostringstream out;
-  ASSERT_EQ(StartConsoleUI(SplitString("test"), out), 1);
+  std::istringstream in;
+  ASSERT_EQ(StartConsoleUI(SplitString("test"), out, in), 1);
 }
 
 TEST_F(WeatherForecastIntegrationTestSuite, NegitiveOutputTest1) {
   std::ostringstream out;
-  StartConsoleUI(SplitString("test"), out);
+  std::istringstream in;
+  StartConsoleUI(SplitString("test"), out, in);
   ASSERT_EQ(out.str(), "Insufficient arguments\n");
 }
