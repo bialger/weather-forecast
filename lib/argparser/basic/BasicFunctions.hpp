@@ -6,7 +6,9 @@
 #include <iostream>
 
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 #else
 #define STD_OUTPUT_HANDLE 0

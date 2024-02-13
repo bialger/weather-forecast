@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstdint>
 
 int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, std::istream& in);
 
