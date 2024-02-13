@@ -22,6 +22,9 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Notepad++ temporary file
+*.bak
+
 # Prerequisites
 *.d
 
