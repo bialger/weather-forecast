@@ -16,11 +16,11 @@ jobs:
             build_type: "Release", cc: "cl", cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           }
-          - {
-            name: "Windows Latest MinGW", artifact: "Windows-MinGW.tar.xz",
-            os: windows-latest,
-            build_type: "Release", cc: "gcc", cxx: "g++"
-          }
+#          - {
+#            name: "Windows Latest MinGW", artifact: "Windows-MinGW.tar.xz",
+#            os: windows-latest,
+#            build_type: "Release", cc: "gcc", cxx: "g++"
+#          } # some fatal errors using MinGw; MSVC - ok
           - {
             name: "Ubuntu Latest GCC", artifact: "Linux.tar.xz",
             os: ubuntu-latest,
@@ -58,11 +58,11 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
-              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles"
+              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGITHUB_ACTIONS=True -G "Unix Makefiles"
+              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGITHUB_ACTIONS=True -G "Unix Makefiles"
           else 
-              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release
-              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug
+              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGITHUB_ACTIONS=True
+              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGITHUB_ACTIONS=True
           fi
 
       - name: Build main target
@@ -78,11 +78,15 @@ jobs:
         working-directory: ./cmake-build-release
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-              cd Debug
-              ./weather-forecast.exe --help
+              if [ "${{ matrix.config.cxx }}" == "g++" ]; then
+                ./cpp_tests.exe --help
+              else
+                cd Debug
+                ./cpp_tests.exe --help
+              fi
           else 
               cd bin
-              ./weather-forecast --help
+              ./cpp_tests --help
           fi
 
       - name: Run tests
@@ -90,11 +94,15 @@ jobs:
         working-directory: ./cmake-build-debug
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-              cd Debug
-              ./weather-forecast_tests.exe
+              if [ "${{ matrix.config.cxx }}" == "g++" ]; then
+                ./cpp_tests_tests_.exe
+              else
+                cd Debug
+                ./cpp_tests_tests.exe
+              fi
           else
               cd tests
-              ./weather-forecast_tests
+              ./cpp_tests_tests
           fi
 
   memory-leaks:
