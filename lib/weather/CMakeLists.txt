@@ -5,6 +5,6 @@ add_library(weather STATIC
         WeatherDay.hpp
 )
 
-target_link_libraries(weather PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(weather PRIVATE nlohmann_json::nlohmann_json)
 
 target_include_directories(weather PUBLIC ${PROJECT_SOURCE_DIR})
