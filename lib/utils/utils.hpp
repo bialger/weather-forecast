@@ -5,6 +5,8 @@
 #include <string_view>
 #include <iostream>
 
+#include "ErrorOutput.hpp"
+
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -16,13 +18,6 @@
 int GetStdHandle(int a);
 int SetConsoleTextAttribute(int a, int b);
 #endif
-
-/**\n Structure for error output in ArgumentParser */
-
-struct ErrorOutput {
-  std::ostream& error_stream = std::cout;
-  bool print_errors = false;
-};
 
 /**\n This function always returns true, because it is a default function */
 
