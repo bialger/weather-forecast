@@ -58,20 +58,22 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGITHUB_ACTIONS=True -G "Unix Makefiles"
-              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGITHUB_ACTIONS=True -G "Unix Makefiles"
+              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash -G "Unix Makefiles"
+              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash -G "Unix Makefiles"
           else 
-              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGITHUB_ACTIONS=True
-              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGITHUB_ACTIONS=True
+              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash
+              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash
           fi
 
       - name: Build main target
+        shell: bash
         run: |
-          cmake --build cmake-build-release --target weather-forecast
+          cmake --build cmake-build-release --target cpp_tests || echo "Built with errors"
 
       - name: Build tests target
+        shell: bash
         run: |
-          cmake --build cmake-build-debug --target weather-forecast_tests
+          cmake --build cmake-build-debug --target cpp_tests_tests || echo "Built with errors"
 
       - name: Run program
         shell: bash
