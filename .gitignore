@@ -25,6 +25,9 @@ fabric.properties
 # Notepad++ temporary file
 *.bak
 
+# API keys
+*.apikey
+
 # Prerequisites
 *.d
 
