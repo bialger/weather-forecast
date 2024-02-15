@@ -13,8 +13,11 @@
 #endif
 #include <Windows.h>
 #else
+#define CP_UTF8 0
 #define STD_OUTPUT_HANDLE 0
 #define HANDLE int
+int SetConsoleOutputCP(int a);
+int SetConsoleCP(int a);
 int GetStdHandle(int a);
 int SetConsoleTextAttribute(int a, int b);
 #endif
@@ -34,6 +37,10 @@ void ResetColor();
 /**\n This function prints a error message. */
 
 void DisplayError(const std::string& message, ErrorOutput error_output);
+
+/**\n This function sets the output to UTF-8 on Windows. */
+
+void SetOutputToUnicode();
 
 /**\n This function checks if the code is running on Windows. */
 

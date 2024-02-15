@@ -47,6 +47,14 @@ void DisplayError(const std::string& message, ErrorOutput error_output) {
   }
 }
 
+void SetOutputToUnicode() {
+  if (IsWindows()) {
+    setlocale(LC_ALL, ".UTF8");
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+  }
+}
+
 bool IsWindows() {
   return
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
@@ -107,6 +115,8 @@ bool IsDirectory(std::string& dirname) {
  * return their input parameters. */
 
 #if not(defined _WIN32 || defined _WIN64 || defined __CYGWIN__)
-int GetStdHandle(int a) { return a; }
-int SetConsoleTextAttribute(int a, int b) { return a + b; }
+int SetConsoleOutputCP(int a) {return a;}
+int SetConsoleCP(int a) {return a;}
+int GetStdHandle(int a) {return a;}
+int SetConsoleTextAttribute(int a, int b) {return a + b;}
 #endif

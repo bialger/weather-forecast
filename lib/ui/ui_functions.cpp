@@ -6,6 +6,7 @@
 #include "ftxui/component/component.hpp"
 
 int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, std::istream& in) {
+  SetOutputToUnicode();
   ErrorOutput error_output = {out, true};
   ArgumentParser::ArgParser parser("weather-forecast");
 
