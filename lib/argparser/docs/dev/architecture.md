@@ -111,8 +111,8 @@ classDiagram
         +StoreValue(T& value) ConcreteArgumentBuilder&
         +StoreValues(vector~T~ & values) ConcreteArgumentBuilder&
         +Default(T value) ConcreteArgumentBuilder&
-        +AddValidate(+function~bool(string&)~ validate) ConcreteArgumentBuilder&
-        +AddIsGood(+function~bool(string&)~ is_good) ConcreteArgumentBuilder&
+        +AddValidate(function~bool(string&)~ validate) ConcreteArgumentBuilder&
+        +AddIsGood(function~bool(string&)~ is_good) ConcreteArgumentBuilder&
         +GetInfo() ArgumentInformation
         +GetDefaultValue() string
         +build() Argument*`
