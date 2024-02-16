@@ -370,7 +370,7 @@ inline size_t ArgumentParser::ConcreteArgument<CompositeString>::ObtainValue(con
   }
 
   if (info_.Validate(value_string) && info_.IsGood(value_string)) {
-    value_ = value_string.c_str();
+    value_ = value_string;
     position = current;
     size_t start_position = used_values.back();
 

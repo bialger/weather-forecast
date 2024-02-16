@@ -11,6 +11,9 @@ class CompositeString : public std::string {
   using base = std::string;
  public:
   using base::base;
+  using base::operator=;
+  using base::operator+=;
+  using base::operator[];
 };
 
 namespace ArgumentParser {
