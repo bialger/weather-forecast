@@ -138,8 +138,8 @@ classDiagram
         +StoreValue(T& value) ConcreteArgumentBuilder&
         +StoreValues(vector~T~ & values) ConcreteArgumentBuilder&
         +Default(T value) ConcreteArgumentBuilder&
-        +AddValidate(bool(* validate)(string&)) ConcreteArgumentBuilder&
-        +AddIsGood(bool(* is_good)(std:: string&)) ConcreteArgumentBuilder&
+        +AddValidate(+function~bool(string&)~ validate) ConcreteArgumentBuilder&
+        +AddIsGood(+function~bool(string&)~ is_good) ConcreteArgumentBuilder&
         +GetInfo() ArgumentInformation
         +GetDefaultValue() string
         +build() Argument*`
@@ -155,8 +155,8 @@ classDiagram
         +bool has_store_values = false
         +bool has_store_value = false
         +bool has_default = false
-        +bool(* Validate)(string&) = &AlwaysTrue
-        +bool(* IsGood)(string&) = &AlwaysTrue
+        +function~bool(string&)~ validate = &AlwaysTrue
+        ++function~bool(string&)~ is_good = &AlwaysTrue
     }
     class ArgumentParsingStatus {
         <<enumeration>>

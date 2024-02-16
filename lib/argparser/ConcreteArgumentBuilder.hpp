@@ -64,13 +64,13 @@ class ConcreteArgumentBuilder : public ArgumentBuilder {
     return *this;
   }
 
-  ConcreteArgumentBuilder& AddValidate(bool (* validate)(std::string&)) {
-    info_.Validate = validate;
+  ConcreteArgumentBuilder& AddValidate(const std::function<bool(std::string&)>& validate) {
+    info_.validate = validate;
     return *this;
   }
 
-  ConcreteArgumentBuilder& AddIsGood(bool (* is_good)(std::string&)) {
-    info_.IsGood = is_good;
+  ConcreteArgumentBuilder& AddIsGood(const std::function<bool(std::string&)>& is_good) {
+    info_.is_good = is_good;
     return *this;
   }
 

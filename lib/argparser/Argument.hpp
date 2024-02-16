@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "lib/argparser/basic/BasicFunctions.hpp"
 
@@ -41,8 +42,10 @@ struct ArgumentInformation {
   bool has_store_values = false;
   bool has_store_value = false;
   bool has_default = false;
-  bool (* Validate)(std::string&) = &AlwaysTrue;
-  bool (* IsGood)(std::string&) = &AlwaysTrue;
+  std::function<bool(std::string&)> validate = &AlwaysTrue;
+  std::function<bool(std::string&)> is_good = &AlwaysTrue;
+  //bool (* Validate)(std::string&) = &AlwaysTrue;
+  //bool (* IsGood)(std::string&) = &AlwaysTrue;
 };
 
 class Argument {

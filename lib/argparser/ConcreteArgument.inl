@@ -12,7 +12,7 @@ inline size_t ArgumentParser::ConcreteArgument<int16_t>::ObtainValue(const std::
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<int16_t>::min() || pre_value >= std::numeric_limits<int16_t>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -34,7 +34,7 @@ inline size_t ArgumentParser::ConcreteArgument<int32_t>::ObtainValue(const std::
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<int32_t>::min() || pre_value >= std::numeric_limits<int32_t>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -56,7 +56,7 @@ inline size_t ArgumentParser::ConcreteArgument<int64_t>::ObtainValue(const std::
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<int64_t>::min() || pre_value >= std::numeric_limits<int64_t>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -78,7 +78,7 @@ inline size_t ArgumentParser::ConcreteArgument<uint16_t>::ObtainValue(const std:
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<uint16_t>::min() || pre_value >= std::numeric_limits<uint16_t>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -100,7 +100,7 @@ inline size_t ArgumentParser::ConcreteArgument<uint32_t>::ObtainValue(const std:
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<uint32_t>::min() || pre_value >= std::numeric_limits<uint32_t>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -122,7 +122,7 @@ inline size_t ArgumentParser::ConcreteArgument<uint64_t>::ObtainValue(const std:
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<uint64_t>::min() || pre_value >= std::numeric_limits<uint64_t>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -144,7 +144,7 @@ inline size_t ArgumentParser::ConcreteArgument<float>::ObtainValue(const std::ve
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<float>::min() || pre_value >= std::numeric_limits<float>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -166,7 +166,7 @@ inline size_t ArgumentParser::ConcreteArgument<double>::ObtainValue(const std::v
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<double>::min() || pre_value >= std::numeric_limits<double>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -188,7 +188,7 @@ inline size_t ArgumentParser::ConcreteArgument<long double>::ObtainValue(const s
 
   if (end == value_string.c_str() || *end != '\0' ||
       ((pre_value <= std::numeric_limits<long double>::min() || pre_value >= std::numeric_limits<long double>::max()) &&
-          errno == ERANGE) || !info_.IsGood(value_string)) {
+          errno == ERANGE) || !info_.is_good(value_string)) {
     errno = save_errno;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   } else {
@@ -220,7 +220,7 @@ inline size_t ArgumentParser::ConcreteArgument<char>::ObtainValue(const std::vec
                                                                   std::vector<size_t>& used_values,
                                                                   size_t position) {
   if (value_string[0] != '\\') {
-    if (value_string.size() == 1 && info_.IsGood(value_string)) {
+    if (value_string.size() == 1 && info_.is_good(value_string)) {
       value_ = value_string[0];
     } else {
       value_status_ = ArgumentParsingStatus::kInvalidArgument;
@@ -320,7 +320,7 @@ inline size_t ArgumentParser::ConcreteArgument<char>::ObtainValue(const std::vec
     }
   }
 
-  if (!info_.IsGood(value_string)) {
+  if (!info_.is_good(value_string)) {
     value_ = default_value_;
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
   }
@@ -333,7 +333,7 @@ inline size_t ArgumentParser::ConcreteArgument<std::string>::ObtainValue(const s
                                                                          std::string& value_string,
                                                                          std::vector<size_t>& used_values,
                                                                          size_t position) {
-  if (info_.IsGood(value_string)) {
+  if (info_.is_good(value_string)) {
     value_ = value_string;
   } else {
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
@@ -347,21 +347,21 @@ inline size_t ArgumentParser::ConcreteArgument<CompositeString>::ObtainValue(con
                                                                              std::string& value_string,
                                                                              std::vector<size_t>& used_values,
                                                                              size_t position) {
-  if (!info_.Validate(value_string)) {
+  if (!info_.validate(value_string)) {
     value_status_ = ArgumentParsingStatus::kInvalidArgument;
     return position;
   }
 
-  size_t current = position + (info_.IsGood(value_string) ? 0 : 1);
+  size_t current = position + (info_.is_good(value_string) ? 0 : 1);
 
   while (current < argv.size() && argv[current][0] != '-' &&
       value_status_ != ArgumentParsingStatus::kInvalidArgument &&
       value_string.size() < 256 &&
-      !info_.IsGood(value_string)) {
+      !info_.is_good(value_string)) {
     value_string += " ";
     value_string += argv[current];
 
-    if (!info_.Validate(value_string)) {
+    if (!info_.validate(value_string)) {
       value_status_ = ArgumentParsingStatus::kInvalidArgument;
       break;
     }
@@ -369,7 +369,7 @@ inline size_t ArgumentParser::ConcreteArgument<CompositeString>::ObtainValue(con
     ++current;
   }
 
-  if (info_.Validate(value_string) && info_.IsGood(value_string)) {
+  if (info_.validate(value_string) && info_.is_good(value_string)) {
     value_ = value_string;
     position = current;
     size_t start_position = used_values.back();

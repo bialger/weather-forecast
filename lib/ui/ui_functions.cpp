@@ -25,7 +25,7 @@ int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, 
       + std::to_string(kMinimalIntervalSize)
       + ". The default value means using the parameter from the configuration file.";
 
-  auto IsGoodIntervalLength = [](std::string& str_size) {
+  auto IsGoodIntervalLength = [&](std::string& str_size) -> bool {
     int32_t block_size = std::stoi(str_size);
     return block_size > kMinimalIntervalSize && block_size <= kMaximalIntervalSize;
   };
