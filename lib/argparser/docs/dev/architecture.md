@@ -33,7 +33,7 @@ title: Diagram of the module ArgParser
 %%{
   init: {
     'theme': 'base',
-    'classDiagram': { 'curve': 'linaer' },
+    'classDiagram': { 'curve': 'linear' },
   }
 }%%
 classDiagram
