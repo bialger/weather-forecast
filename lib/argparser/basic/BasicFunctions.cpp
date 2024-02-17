@@ -2,11 +2,11 @@
 #include <filesystem>
 #include "BasicFunctions.hpp"
 
-bool AlwaysTrue(std::string& str) {
+bool ArgumentParser::AlwaysTrue(std::string& str) {
   return true;
 }
 
-void SetRedColor() {
+void ArgumentParser::SetRedColor() {
   /* Changes the color of the console output to red if not running
    * on Windows. */
 
@@ -21,7 +21,7 @@ void SetRedColor() {
   }
 }
 
-void ResetColor() {
+void ArgumentParser::ResetColor() {
   if (IsWindows()) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, 15);
@@ -30,7 +30,7 @@ void ResetColor() {
   std::cout << (IsWindows() ? "" : "\x1B[0m");
 }
 
-void DisplayError(const std::string& message, ErrorOutput error_output) {
+void ArgumentParser::DisplayError(const std::string& message, ErrorOutput error_output) {
   if (!error_output.print_errors) {
     return;
   }
@@ -46,7 +46,7 @@ void DisplayError(const std::string& message, ErrorOutput error_output) {
   }
 }
 
-bool IsWindows() {
+bool ArgumentParser::IsWindows() {
   return
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
     true
@@ -56,7 +56,7 @@ bool IsWindows() {
       ;
 }
 
-bool IsValidFilename(std::string& pre_filename) {
+bool ArgumentParser::IsValidFilename(std::string& pre_filename) {
   if (pre_filename.size() > 7) {
     if (pre_filename.substr(0, 7) == "file://") {
       pre_filename = pre_filename.substr(7);
@@ -89,12 +89,12 @@ bool IsValidFilename(std::string& pre_filename) {
   return true;
 }
 
-bool IsRegularFile(std::string& filename) {
+bool ArgumentParser::IsRegularFile(std::string& filename) {
   std::filesystem::path path(filename);
   return std::filesystem::is_regular_file(path);
 }
 
-bool IsDirectory(std::string& dirname) {
+bool ArgumentParser::IsDirectory(std::string& dirname) {
   std::filesystem::path path(dirname);
   return std::filesystem::is_directory(path);
 }

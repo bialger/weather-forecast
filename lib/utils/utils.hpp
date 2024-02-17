@@ -16,10 +16,10 @@
 #define CP_UTF8 0
 #define STD_OUTPUT_HANDLE 0
 #define HANDLE int
-int SetConsoleOutputCP(int a);
-int SetConsoleCP(int a);
-int GetStdHandle(int a);
-int SetConsoleTextAttribute(int a, int b);
+inline int SetConsoleOutputCP(int a);
+inline int SetConsoleCP(int a);
+inline int GetStdHandle(int a);
+inline int SetConsoleTextAttribute(int a, int b);
 #endif
 
 /**\n This function always returns true, because it is a default function */

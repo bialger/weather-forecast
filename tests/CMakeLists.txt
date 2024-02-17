@@ -24,11 +24,11 @@ add_executable(
         ArgParserUnitTestSuite.hpp
 )
 
-target_link_libraries(
-        ${PROJECT_NAME}_tests
+target_link_libraries(${PROJECT_NAME}_tests PUBLIC
         ui
         argparser
         GTest::gtest_main
+        PRIVATE argparser_basic
 )
 
 set(MSVC_LIBRARY_EXTENSION lib)

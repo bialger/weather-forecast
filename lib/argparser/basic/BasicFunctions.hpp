@@ -1,11 +1,12 @@
-#ifndef BASICFUNCTIONS_HPP_
-#define BASICFUNCTIONS_HPP_
+#ifndef ARGPARSER_BASICFUNCTIONS_HPP_
+#define ARGPARSER_BASICFUNCTIONS_HPP_
 
 #include <cstdint>
 #include <string_view>
 #include <iostream>
 
 #include "ErrorOutput.hpp"
+
 
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
 #ifndef NOMINMAX
@@ -15,9 +16,11 @@
 #else
 #define STD_OUTPUT_HANDLE 0
 #define HANDLE int
-int GetStdHandle(int a);
-int SetConsoleTextAttribute(int a, int b);
+inline int GetStdHandle(int a);
+inline int SetConsoleTextAttribute(int a, int b);
 #endif
+
+namespace ArgumentParser {
 
 /**\n This function always returns true, because it is a default function */
 
@@ -54,4 +57,6 @@ bool IsRegularFile(std::string& filename);
 
 bool IsDirectory(std::string& dirname);
 
-#endif //BASICFUNCTIONS_HPP_
+}
+
+#endif //ARGPARSER_BASICFUNCTIONS_HPP_

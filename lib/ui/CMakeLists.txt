@@ -6,10 +6,10 @@ add_library(ui STATIC
 target_link_libraries(ui PUBLIC
         argparser
         forecast
-        utils
         ftxui::screen
         ftxui::dom
         ftxui::component
+        PRIVATE utils
 )
 
 target_include_directories(ui PUBLIC ${PROJECT_SOURCE_DIR})
