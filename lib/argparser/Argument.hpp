@@ -42,10 +42,8 @@ struct ArgumentInformation {
   bool has_store_values = false;
   bool has_store_value = false;
   bool has_default = false;
-  std::function<bool(std::string&)> validate = &AlwaysTrue;
-  std::function<bool(std::string&)> is_good = &AlwaysTrue;
-  //bool (* Validate)(std::string&) = &AlwaysTrue;
-  //bool (* IsGood)(std::string&) = &AlwaysTrue;
+  std::function<bool(std::string&)> validate = [](std::string& value_string) -> bool { return true; };
+  std::function<bool(std::string&)> is_good = [](std::string& value_string) -> bool { return true; };
 };
 
 class Argument {

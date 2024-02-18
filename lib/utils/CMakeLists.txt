@@ -1,4 +1,4 @@
-add_library(utils
+add_library(utils STATIC
         utils.cpp
         utils.hpp
         ErrorOutput.hpp

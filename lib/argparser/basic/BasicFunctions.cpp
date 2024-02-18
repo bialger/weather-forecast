@@ -2,10 +2,6 @@
 #include <filesystem>
 #include "BasicFunctions.hpp"
 
-bool ArgumentParser::AlwaysTrue(std::string& str) {
-  return true;
-}
-
 void ArgumentParser::SetRedColor() {
   /* Changes the color of the console output to red if not running
    * on Windows. */

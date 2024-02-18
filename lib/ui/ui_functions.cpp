@@ -2,10 +2,8 @@
 
 #include "ui_functions.hpp"
 #include "lib/argparser/ArgParser.hpp"
+#include "lib/ftxui/ftxui_interface.hpp"
 
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/screen/screen.hpp>
-#include "ftxui/component/component.hpp"
 #include <nlohmann/json.hpp>
 #include <cpr/cpr.h>
 

@@ -10,3 +10,15 @@ FetchContent_Declare(ftxui
 )
 
 FetchContent_MakeAvailable(ftxui)
+
+add_library(ftxui_interface STATIC
+        ftxui_interface.cpp
+)
+
+target_link_libraries(ftxui_interface PUBLIC
+        ftxui::screen
+        ftxui::dom
+        ftxui::component
+)
+
+target_include_directories(ftxui_interface PUBLIC ${PROJECT_SOURCE_DIR})

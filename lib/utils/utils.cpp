@@ -3,10 +3,6 @@
 
 #include "utils.hpp"
 
-bool AlwaysTrue(std::string& str) {
-  return true;
-}
-
 void SetRedColor() {
   /* Changes the color of the console output to red if not running
    * on Windows. */

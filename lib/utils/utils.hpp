@@ -22,10 +22,6 @@ inline int GetStdHandle(int a);
 inline int SetConsoleTextAttribute(int a, int b);
 #endif
 
-/**\n This function always returns true, because it is a default function */
-
-bool AlwaysTrue(std::string& str);
-
 /**\n This function sets the console text color to red. */
 
 void SetRedColor();
