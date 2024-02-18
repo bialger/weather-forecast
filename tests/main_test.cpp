@@ -6,7 +6,7 @@
 #include "lib/ui/ui_functions.hpp"
 
 const std::string kExpectedHelp = "weather-forecast\n"
-                                  "Program to show weather forecast\n"
+                                  "A program for displaying the weather forecast in the terminal.\n"
                                   "\n"
                                   "OPTIONS:\n"
                                   "-l,  --location=<string>:  Name of the location for which the forecast is requested [default = First location in config]\n"
