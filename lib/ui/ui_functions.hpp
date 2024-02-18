@@ -10,4 +10,6 @@
 
 int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, std::istream& in);
 
+std::vector<std::string> GetPotentialConfigDirectories();
+
 #endif //UI_FUNCTIONS_HPP_
