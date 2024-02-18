@@ -27,11 +27,11 @@ git clone https://github.com/bialger/weather-forecast.git && cd weather-forecast
 
 #### Автоматизированная сборка (только для Linux)
 
-* Сделайте исполняемым и запустите [shell-script установки](../runCMake.sh), затем
+* Сделайте исполняемым и запустите [shell-script установки](../install_linux.sh), затем
   следуйте инструкциям:
 
 ```shell
-chmod +x ./runCMake.sh && ./runCMake.sh
+chmod +x ./install_linux.sh && ./install_linux.sh
 ```
 
 #### Ручная сборка
