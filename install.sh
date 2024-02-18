@@ -29,8 +29,7 @@ fi
 EXEC_LINK_PATH="$HOME/weather-forecast$EXEC_EXTENSION"
 
 if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --build "$CMAKE_PROJECT_DIR" --target "$PROJECT_NAME"); then
-  echo 'Enter your Yandex Geocoder API key: '
-  read -r API_KEY && echo "$API_KEY" > "$LOCAL_CONFIG_DIR/yandex_api_key.apikey"
+  printf 'Enter your Yandex Geocoder API key: ' && read -r API_KEY && echo "$API_KEY" > "$LOCAL_CONFIG_DIR/yandex_api_key.apikey"
   cp -rf "$LOCAL_CONFIG_DIR" "$CONFIG_DIR"
   rm -f "$EXEC_LINK_PATH"
   ln -s "$EXEC_PATH" "$EXEC_LINK_PATH"
@@ -43,8 +42,7 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --bui
     echo ''
 
     if [ "$OS_NAME" = "Linux" ]; then
-      echo 'Do you want to add this utility to /usr/bin (y/n)? '
-      read -r CHOISE
+      printf 'Do you want to add this utility to /usr/bin (y/n)? ' && read -r CHOISE
       COMMON_LINK_PATH="/usr/bin/${PROJECT_NAME:?}"
       COMMON_CONFIG_DIR="/etc/${PROJECT_NAME:?}"
       COMMON_PROJECT_DIR="/opt/${PROJECT_NAME:?}"
