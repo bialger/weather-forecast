@@ -26,7 +26,7 @@
 
 В качестве образца для визуализации предлагается взять следующий:
 
-![image](interface.png) Скриншот взят с  https://wttr.in
+![image](assets/interface.png) Скриншот взят с  https://wttr.in
 
 ## Реализация
 
