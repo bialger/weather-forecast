@@ -17,7 +17,7 @@ weather-forecast.
 
 ### Linux и MacOs
 
-* Сначала, если Вы этого не сделали, клонируйте проект и перейдите в его каталог^
+* Сначала, если Вы этого не сделали, клонируйте проект и перейдите в его каталог:
 
 ```shell
 git clone https://github.com/bialger/weather-forecast.git && cd weather-forecast
@@ -27,11 +27,11 @@ git clone https://github.com/bialger/weather-forecast.git && cd weather-forecast
 
 #### Автоматизированная сборка (только для Linux)
 
-* Сделайте исполняемым и запустите [shell-script установки](../install_linux.sh), затем
+* Сделайте исполняемым и запустите [shell-script установки](../install.sh), затем
   следуйте инструкциям:
 
 ```shell
-chmod +x ./install_linux.sh && ./install_linux.sh
+chmod +x ./install.sh && ./install.sh
 ```
 
 #### Ручная сборка
@@ -68,5 +68,11 @@ ln -s ~/CMakeBuilds/weather-forecast/bin/weather-forecast ~/weather-forecast.run
 ```
 
 ### Windows 
+
+* Сначала, если Вы этого не сделали, клонируйте проект и перейдите в его каталог:
+
+```shell
+git clone https://github.com/bialger/weather-forecast.git && cd weather-forecast
+```
 
 
