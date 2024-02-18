@@ -62,7 +62,7 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --bui
 
           sudo rm -f "$COMMON_LINK_PATH"
           sudo cp -r "$CMAKE_PROJECT_DIR" "$COMMON_PROJECT_DIR"
-          sudo cp -r "$LOCAL_CONFIG_DIR" COMMON_CONFIG_DIR
+          sudo cp -r "$LOCAL_CONFIG_DIR" "$COMMON_CONFIG_DIR"
           sudo ln -s "$COMMON_EXEC_PATH" "$COMMON_LINK_PATH"
           echo "Accepted, run utility with $PROJECT_NAME"
         else
