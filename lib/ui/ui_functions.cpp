@@ -11,8 +11,27 @@ int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, 
   SetOutputToUnicode();
   constexpr int32_t kMinimalIntervalSize = 0; // that means use one from config
   constexpr int32_t kMaximalIntervalSize = 48;
-  const std::vector<std::string> potential_config_dirs =
-      {"./", "./.config", "../.config", "../../.config", "~/config/weather-forecast/", "/etc/weather-forecast/"};
+  std::vector<std::string> potential_config_dirs = {};
+  const std::vector<std::string> dir_starts = {".", ".."};
+  const std::vector<std::string> dir_middles = {"/.config", "/../.config"};
+  const std::vector<std::string> dir_ends = {"", "/weather-forecast"};
+
+  for (const std::string& dir_start : dir_starts) {
+    for (const std::string& dir_middle : dir_middles) {
+      for (const std::string& dir_end : dir_ends) {
+        std::string potential_config_dir = dir_start;
+        potential_config_dir += dir_middle;
+        potential_config_dir += dir_end;
+        potential_config_dirs.push_back(potential_config_dir);
+      }
+    }
+  }
+
+  if (!IsWindows()) {
+    potential_config_dirs.emplace_back("~/config/weather-forecast/");
+    potential_config_dirs.emplace_back("/etc/weather-forecast/");
+  }
+
   ErrorOutput error_output = {out, true};
   ArgumentParser::ArgParser parser("weather-forecast");
   CompositeString default_config_path = "default_config.json";
