@@ -22,26 +22,23 @@
 
 ```mermaid
 ---
-title: Diagram of the system of the project
+title: Project system diagram
 ---
 flowchart LR
-    subgraph Atomic systems
+    subgraph Independent systems
         nodeArgParser([ArgParser])
-      nodeWeather([Weather])
         subgraph Third-party libraries
-          nodeCPR([C++ Requests])
-          nodeJSON([JSON])
-          nodeFTXUI([FTXUI])
+            nodeCPR([C++ Requests])
+            nodeJSON([JSON])
+            nodeFTXUI([FTXUI])
         end
     end
-    nodeMain[main]
     nodeForecast([Forecast])
-    
+    nodeMain[main]
     nodeArgParser --> nodeMain
     nodeForecast --> nodeMain
-    nodeWeather --> nodeForecast
     nodeCPR --> nodeForecast
-    nodeJSON --> nodeWeather
+    nodeJSON --> nodeForecast
     nodeFTXUI --> nodeMain
 ```
 
@@ -49,7 +46,49 @@ flowchart LR
 
 Архитектура внешних подсистем лежит вне области рассмотрения данного документа.
 
+### Архитектура подсистемы "Forecast"
+
+Эта подсистема представляет собой набор классов и связей между ними, которые выполняют
+поиск прогноза погоды с данными параметрами, и передают назад обработанные результаты
+для показа пользователю.
+
+#### UML-диаграмма
+
+<!-- TODO: составить диаграмму -->
+
+#### Класс Forecaster
+
+Этот класс является основным классом модуля. Должен выводить свои ошибки в переданный 
+поток. Должен содержать методы обработки конфигурационного файла (включая метод, 
+проверяющий его валидность), методы запросов к 
+[Yandex Geocoder API](https://yandex.ru/dev/geocode/doc/ru/) и
+[Open Meteo API](https://open-meteo.com/en/docs#latitude=59.94&longitude=30.31&hourly=temperature_2m&forecast_days=16),
+метод получения результата по дням. Результат хотя бы некоторых запросов должен быть
+кеширован.
+
+#### Класс JsonCache
+
+Этот класс является абстракцией для представления кешированного результата запроса к
+API в формате JSON. Должен содержать методы для кеширования и получения из кэша
+запроса по имени.
+
+#### Класс WeatherDay
+
+Этот класс является абстракцией для представления погоды за день. Должен содержать
+методы для обработки погоды за каждый наименьший временной промежуток и метод 
+получения результатов.
+
+#### Класс WeatherTimeUnit
+
+Этот класс является абстракцией для представления погоды за наименьший временной 
+промежуток: время суток. Должен иметь публичные поля для всех характеристик и метод,
+универсально возвращающий их всех.
+
 ### Архитектура подсистемы "ArgParser"
+
+Эта подсистема представляет собой набор классов и связей между ними, которые выполняют
+непосредственно парсинг аргументов командной строки, передаваемых в подсистему. Все
+классы находятся в пространстве имён ArgumentParser.
 
 #### UML-диаграмма
 
@@ -178,10 +217,6 @@ classDiagram
     ConcreteArgumentBuilder <.. ConcreteArgument
     ConcreteArgumentBuilder *-- ArgumentInformation
 ```
-
-Эта подсистема представляет собой набор классов и связей между ними, которые выполняют
-непосредственно парсинг аргументов командной строки, передаваемых в подсистему. Все
-классы находятся в пространстве имён ArgumentParser.
 
 #### Класс ArgParser
 
