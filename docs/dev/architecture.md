@@ -10,13 +10,12 @@
 
 * Используется модуль [ArgParser](../../lib/argparser/docs/README.md) - подсистема
   для обработки аргументов командной строки.
-* Используется модуль Weather для обработки полученных данных о погоде.
-* Используется модуль Forecast для выполнения и обрботки запросов с выводом
+* Используется модуль Forecast для выполнения и обработки запросов прогноза.
 * Используется библиотека [C++ Requests](https://github.com/libcpr/cpr) для выполнения HTTP-запросов.
 * Используется библиотека [nlohmann_json](https://github.com/nlohmann/json) для
   обработки JSON-файлов
 * Используется библиотека [FTXUI](https://github.com/ArthurSonzogni/FTXUI) для
-  отображения текста в терминале и обработки пользовательского ввода.
+  работы с TUI, включая пользовательский ввод.
 
 #### UML-диаграмма
 
@@ -54,7 +53,79 @@ flowchart LR
 
 #### UML-диаграмма
 
-<!-- TODO: составить диаграмму -->
+```mermaid
+---
+title: Diagram of the module Forecast
+---
+%%{
+  init: {
+    'theme': 'base',
+    'classDiagram': { 'curve': 'linaer' },
+  }
+}%%
+classDiagram
+  direction TB
+  class Forecaster {
+    +int32_t kLowerLimitIntervalSize$
+    +int32_t kUpperLimitIntervalSize$
+    +int32_t kLowerLimitDaysCount$
+    +int32_t kUpperLimitDaysCount$
+    -vector~string~ locations_
+    -int32_t interval_
+    -int32_t days_count_
+    -int32_t location_index_
+    -bool is_valid_
+    -Point coordinates_
+    -time last_update_
+    -json config_
+    -vector~WeatherDay~ forecast_
+    -WeatherTimeUnit current_weather_
+    -JsonCache geocoder_cache_
+    +IsValidConfig(string config)$ bool
+    +AddConfig(string config) int32_t
+    +ObtainForecast() int32_t
+    +SwapToNext() int32_t
+    +SwapToPrev() int32_t
+    +GetForecast() vector~WeatherDay~
+    +GetCurrentWeather() WeatherTimeUnit
+    +GetLocation() string
+    +IsValid() bool
+    -RequestPosition() int32_t
+    -RequestForecast() int32_t
+    -ProcessPosition() int32_t
+    -ProcessForecast() int32_t
+  }
+  class JsonCache {
+    +string cache_group
+    -string cache_dir_
+    +PutJsonToCache(string name, json data) void
+    +GetJsonFromCache(string name) json
+  }
+  class WeatherDay {
+    +int32_t kUnitsInDay$
+    -vector~WeatherTimeUnit~ units_
+    +SetForecast(json forecast, int32_t day_number) void
+    +GetForecastUnits() vector~WeatherTimeUnit~
+  }
+  class WeatherTimeUnit {
+    +map~string, string~ kChargeUnits$
+    +string name
+    +string weather_type
+    +int32_t real_temperature
+    +int32-t felt_temperature
+    +int32_t wind_speed_lower
+    +int32_t wind_speed_upper
+    +int32_t visibility
+    +double precipitation
+    +double uv_index
+    +int32_t humidity
+    +GetAllAsMap() map~string, string~
+  }
+  Forecaster *-- WeatherDay
+  Forecaster *-- WeatherTimeUnit
+  Forecaster *-- JsonCache
+  WeatherDay *-- WeatherTimeUnit
+```
 
 #### Класс Forecaster
 
@@ -233,7 +304,7 @@ classDiagram
 этого класса должна возвращать функция добавления аргумента из ArgParser, к нему
 должен обращаться пользователь, добавляя информацию об аргументе. Должен
 реализовывать функции добавления любой информации про аргумент, представленные в
-[тестах](../../../../tests/argparser_unit_tests.cpp) и функцию построения. Ему должен
+[тестах](../../tests/argparser_unit_tests.cpp) и функцию построения. Ему должен
 наследовать шаблонизированный класс конкретного Builder, который будет реализовывать
 вышеуказанный функционал для каждого из типов аргумента.
 
