@@ -8,7 +8,6 @@ message(STATUS "Libraries build type: ${CMAKE_BUILD_TYPE}")
 
 add_subdirectory(argparser)
 add_subdirectory(ui)
-add_subdirectory(weather)
 add_subdirectory(forecast)
 add_subdirectory(utils)
 

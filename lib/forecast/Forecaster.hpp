@@ -1,7 +1,9 @@
 #ifndef FORECASTER_HPP_
 #define FORECASTER_HPP_
 
-#include "lib/weather/WeatherDay.hpp"
+#include "JsonCache.hpp"
+#include "WeatherDay.hpp"
+#include "WeatherTimeUnit.hpp"
 
 class Forecaster {
 

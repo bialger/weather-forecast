@@ -1,11 +1,17 @@
 add_library(forecast STATIC
         Forecaster.cpp
         Forecaster.hpp
+        JsonCache.cpp
+        JsonCache.hpp
+        WeatherDay.cpp
+        WeatherDay.hpp
+        WeatherTimeUnit.cpp
+        WeatherTimeUnit.hpp
 )
 
 target_link_libraries(forecast PUBLIC
-        weather
         cpr::cpr
+        nlohmann_json::nlohmann_json
 )
 
 target_include_directories(forecast PUBLIC ${PROJECT_SOURCE_DIR})
