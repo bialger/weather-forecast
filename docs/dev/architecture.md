@@ -117,7 +117,6 @@ classDiagram
     +int kLowerLimitDaysCount$
     +int kUpperLimitDaysCount$
     +string kDefaultLocation$
-    +WeatherCharNames kShownNames$
     -vector~string~ locations_
     -int interval_
     -int days_count_
@@ -154,20 +153,15 @@ classDiagram
   }
   class WeatherDay {
     +int kUnitsInDay$
+    +int kHoursInDay$
+    +int kDaysInForecast$
     +map~int, string~ kWeatherCodeToString$
+    +WeatherCharNames kShownNames$
     -string date_
     -vector~WeatherTimeUnit~ units_
-    -json time_
-    -json weather_code_
-    -json temperature_2m_
-    -json apparent_temperature_
-    -json wind_speed_
-    -json visibility_
-    -json pressure_
-    -json precipitation_
-    -json uv_index_
-    -json humidity_
-    -json dates_
+    -map~string, json~ hourly_values_
+    -map~string, json~ daily_values_
+    +GetCurrentWeather(json forecast)$ WeatherTimeUnit
     +SetForecast(json forecast, int day_number) bool
     +GetForecastUnits() vector~WeatherTimeUnit~
     +GetDate() string
@@ -175,8 +169,9 @@ classDiagram
   }
   class WeatherTimeUnit {
     +map~string, string~ kChargeUnits$
+    +map~int, string~ kWeatherCodeToString$
     +WeatherCharNames kShownNames$
-    +string weather_type
+    +int weather_type
     +int real_temperature
     +int felt_temperature
     +int wind_speed_lower
@@ -206,9 +201,8 @@ classDiagram
   Forecaster *-- WeatherTimeUnit
   Forecaster *-- WeatherDay
   Forecaster *-- JsonCache
-  Forecaster *-- WeatherCharNames
   WeatherDay *-- WeatherTimeUnit
-  WeatherDay <.. WeatherCharNames
+  WeatherDay *-- WeatherCharNames
   WeatherTimeUnit *-- WeatherCharNames
 ```
 
