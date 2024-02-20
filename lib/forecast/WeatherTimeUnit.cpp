@@ -15,12 +15,12 @@ const WeatherCharName WeatherTimeUnit::kShownNames = {
 };
 
 const std::map<std::string, std::string> WeatherTimeUnit::kChargeUnits = {
-    {WeatherTimeUnit::kShownNames.temperature, "°C"},
-    {WeatherTimeUnit::kShownNames.wind_speed, "km/h"},
-    {WeatherTimeUnit::kShownNames.visibility, "km"},
-    {WeatherTimeUnit::kShownNames.pressure, "hPa"},
-    {WeatherTimeUnit::kShownNames.precipitation, "mm"},
-    {WeatherTimeUnit::kShownNames.humidity, "%"}
+    {kShownNames.temperature, "°C"},
+    {kShownNames.wind_speed, "km/h"},
+    {kShownNames.visibility, "km"},
+    {kShownNames.pressure, "hPa"},
+    {kShownNames.precipitation, "mm"},
+    {kShownNames.humidity, "%"}
 };
 
 WeatherTimeUnit::WeatherTimeUnit(const std::string& name) : name_(name) {}
@@ -48,20 +48,16 @@ std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
   std::string str_precipitation = std::string(128, '\0');
   std::snprintf(str_precipitation.data(), str_precipitation.size(), "%.1f", precipitation);
 
-  result[WeatherTimeUnit::kShownNames.weather_code] = weather_type;
-  result[WeatherTimeUnit::kShownNames.temperature] = std::to_string(real_temperature) + " (" +
-      std::to_string(felt_temperature) + ") " + kChargeUnits.at(WeatherTimeUnit::kShownNames.temperature);
-  result[WeatherTimeUnit::kShownNames.wind_speed] = std::to_string(wind_speed_lower) + " - " +
-      std::to_string(wind_speed_upper) + " " + kChargeUnits.at(WeatherTimeUnit::kShownNames.wind_speed);
-  result[WeatherTimeUnit::kShownNames.visibility] = str_visibility + " " +
-      kChargeUnits.at(WeatherTimeUnit::kShownNames.visibility);
-  result[WeatherTimeUnit::kShownNames.pressure] = str_pressure + " " +
-      kChargeUnits.at(WeatherTimeUnit::kShownNames.pressure);
-  result[WeatherTimeUnit::kShownNames.precipitation] = str_precipitation + " " +
-      kChargeUnits.at(WeatherTimeUnit::kShownNames.precipitation);
-  result[WeatherTimeUnit::kShownNames.uv_index] = str_uv_index + " (" + uv_level + ")";
-  result[WeatherTimeUnit::kShownNames.humidity] = std::to_string(humidity) + " " +
-      kChargeUnits.at(WeatherTimeUnit::kShownNames.humidity);
+  result[kShownNames.weather_code] = weather_type;
+  result[kShownNames.temperature] = std::to_string(real_temperature) + " (" +
+      std::to_string(felt_temperature) + ") " + kChargeUnits.at(kShownNames.temperature);
+  result[kShownNames.wind_speed] = std::to_string(wind_speed_lower) + " - " +
+      std::to_string(wind_speed_upper) + " " + kChargeUnits.at(kShownNames.wind_speed);
+  result[kShownNames.visibility] = str_visibility + " " + kChargeUnits.at(kShownNames.visibility);
+  result[kShownNames.pressure] = str_pressure + " " + kChargeUnits.at(kShownNames.pressure);
+  result[kShownNames.precipitation] = str_precipitation + " " + kChargeUnits.at(kShownNames.precipitation);
+  result[kShownNames.uv_index] = str_uv_index + " (" + uv_level + ")";
+  result[kShownNames.humidity] = std::to_string(humidity) + " " + kChargeUnits.at(kShownNames.humidity);
 
   return result;
 }
