@@ -67,6 +67,6 @@ std::string GetStringFromFile(const std::string& filename);
 
 /**\n This function writes string to stream. */
 
-bool WriteStringToStream(const std::string& content, std::ostream& target);
+void WriteStringToStream(const std::string& content, std::ostream& target);
 
 #endif //UTILS_HPP_

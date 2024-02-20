@@ -127,7 +127,7 @@ std::string GetStringFromFile(const std::string& filename) {
   return {bytes.data(), static_cast<size_t>(file_size)};
 }
 
-bool WriteStringToStream(const std::string& content, std::ostream& target) {
+void WriteStringToStream(const std::string& content, std::ostream& target) {
   target.write(content.c_str(), static_cast<std::streamsize>(content.size()));
 }
 
