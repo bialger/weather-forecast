@@ -159,7 +159,7 @@ classDiagram
     +map~string, string~ kChargeUnits$
     +string weather_type
     +int real_temperature
-    +int32-t felt_temperature
+    +int felt_temperature
     +int wind_speed_lower
     +int wind_speed_upper
     +int visibility
