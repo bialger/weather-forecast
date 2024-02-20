@@ -120,6 +120,11 @@ mklink "%userprofile%\weather-forecast.exe" "%userprofile%\CMakeBuilds\weather-f
 > требуется валидный API-ключ.
 > Бесплатная версия поддерживает 1000 запросов в сутки.
 
+
+### Пример интерфейса
+
+![image](../assets/weather_forecast_1.png)
+
 ### Вызов
 
 Программа может быть вызвана без аргументов - будут применены значения по умолчанию.
