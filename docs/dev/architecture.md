@@ -51,8 +51,8 @@ flowchart LR
 
 ### Архитектура подсистемы "UI"
 
-Эта подсистема представляет собой класс для любого рода взаимодействия с 
-пользователем: от аргументов командной строки до вывода результата.
+Эта подсистема представляет собой набор классов и связей между ними для любого рода 
+взаимодействия с пользователем: от аргументов командной строки до вывода результата.
 
 #### UML-диаграмма
 
@@ -76,20 +76,61 @@ classDiagram
     -ostream& out_
     -istream& in_
     -ErrorOutput error_output_
+    -ostringstream background_err_
     -ArgParser parser_
     -CompositeString config_path_
     +GetPotentialConfigDirectories()$ vector~string~
-    +Run(vector~string~ args) int
+    +Start(vector~string~ args) int
     -BeginForecast() int
-    -GetBoxForTimeUint(WeatherTimeUnit time_unit) vbox
   }
+  class TuiWorker {
+    +map~int, vector<string>~ kWeatherIcons$;
+    -int kMaxWidth$
+    -int kMaxHeight$
+    -int kFocusLen$
+    -Forecaster& forecaster_;
+    -vector~Element~ elements_;
+    -ScreenInteractive screen_;
+    -size_t start_focus_;
+    -mutex mutex_;
+    -int result_;
+    +Run() int
+    -HandleEvent(Event event) bool;
+    -RefreshElements() void;
+    -RedrawScreen() void;
+    -ReloadScreen(Action action) int;
+    -FocusNext() void;
+    -FocusPrev() void;
+    -GetWeatherIcon(int weather_code)$ Element;
+    -GetUnit(WeatherTimeUnit unit, string header = "")$ Element;
+    -GetDay(WeatherDay day)$ Element;
+    -GetCurrentUnit() Element;
+  }
+  class Action {
+    <<enumeration>>
+    kNext,
+    kPrev,
+    kInterval,
+    kAddLine,
+    kRemoveLine,
+    kNextLine,
+    kPrevLine
+  }
+  TextUserInterface <.. TuiWorker
+  TuiWorker <.. Action
 ```
 
 #### Класс TextUserInterface
 
 Этот класс является основным классом модуля. Должен определять способ вывода ошибок и
-то, как обрабатываются аргументы командной строки. Должен содержать метод запуска и
-все необходимые для работы методы. 
+то, как обрабатываются аргументы командной строки. Должен содержать метод запуска 
+пользовательского интерфейса. Непосредственно взаимодействует с модулем ArgParser.
+
+#### Класс TuiWorker
+
+Этот класс является представлением текстового интерфейса программы. Должен содержать
+метод запуска и все необходимые методы для работы TUIб включая реакцию на 
+пользовательский ввод. Непосредственно взаимодейтсвует с модулем Forecast.
 
 ### Архитектура подсистемы "Forecast"
 
