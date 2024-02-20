@@ -89,7 +89,9 @@ int32_t Forecaster::AddConfig(const std::string& str_config) {
   }
 
   size_t listed_locations_size = locations.size();
-  std::clamp(location_index_, 0, static_cast<int32_t>(listed_locations_size + locations_.size() - 1));
+  interval_ = std::clamp(interval_, kLowerLimitIntervalSize + 1, kUpperLimitIntervalSize - 1);
+  days_count_ = std::clamp(days_count_, kLowerLimitDaysCount + 1, kUpperLimitDaysCount - 1);
+  location_index_ = std::clamp(location_index_, 0, static_cast<int32_t>(listed_locations_size + locations_.size() - 1));
   is_valid_ = true;
 
   for (size_t i = 0; i < listed_locations_size; ++i) {
