@@ -8,7 +8,6 @@
 #include "lib/argparser/ArgParser.hpp"
 #include "lib/ftxui/ftxui_interface.hpp"
 
-#include <nlohmann/json.hpp>
 #include <cpr/cpr.h>
 
 int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, std::istream& in) {
@@ -91,6 +90,7 @@ int32_t BeginForecast(int32_t interval,
                       std::ostream& out,
                       std::istream& in) {
   std::string config_contents = GetStringFromFile(config_path);
+  std::string config_dir = std::filesystem::absolute(std::filesystem::path(config_path)).parent_path().string();
 
   return 0;
 }
