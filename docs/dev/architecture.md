@@ -8,6 +8,8 @@
 Продукт состоит из нескольких связанных подсистем. Несколько из них - внешние
 библиотеки.
 
+* Используется модуль UI для взаимодействия с пользовательским вводом любого рода и
+  вывода информации.
 * Используется модуль [ArgParser](../../lib/argparser/docs/README.md) - подсистема
   для обработки аргументов командной строки.
 * Используется модуль Forecast для выполнения и обработки запросов прогноза.
@@ -33,17 +35,58 @@ flowchart LR
         end
     end
     nodeForecast([Forecast])
+    nodeUI([UI])
     nodeMain[main]
-    nodeArgParser --> nodeMain
-    nodeForecast --> nodeMain
+    nodeArgParser --> nodeUI
+    nodeForecast --> nodeUI
     nodeCPR --> nodeForecast
     nodeJSON --> nodeForecast
-    nodeFTXUI --> nodeMain
+    nodeFTXUI --> nodeUI
+    nodeUI --> nodeMain
 ```
 
 ## Архитектура подсистем
 
 Архитектура внешних подсистем лежит вне области рассмотрения данного документа.
+
+### Архитектура подсистемы "UI"
+
+Эта подсистема представляет собой класс для любого рода взаимодействия с 
+пользователем: от аргументов командной строки до вывода результата.
+
+#### UML-диаграмма
+
+```mermaid
+---
+title: Diagram of the module UI
+---
+%%{
+  init: {
+    'theme': 'base',
+    'classDiagram': { 'curve': 'linaer' },
+  }
+}%%
+classDiagram
+  direction TB
+  class TextUserInterface {
+    +string kProgramName$
+    -ostream& out_
+    -istream& in_
+    -ErrorOutput error_output_
+    -ArgParser parser_
+    -string config_path_
+    +Run(vector~string~ args) int
+    -BeginForecast() int
+    -GetPotentialConfigDirectories() vector~string~
+    -GetBoxForTimeUint(WeatherTimeUnit time_unit) vbox
+  }
+```
+
+#### Класс TextUserInterface
+
+Этот класс является основным классом модуля. Должен определять способ вывода ошибок и
+то, как обрабатываются аргументы командной строки. Должен содержать метод запуска и
+все необходимые для работы методы. 
 
 ### Архитектура подсистемы "Forecast"
 
@@ -66,15 +109,15 @@ title: Diagram of the module Forecast
 classDiagram
   direction TB
   class Forecaster {
-    +int32_t kLowerLimitIntervalSize$
-    +int32_t kUpperLimitIntervalSize$
-    +int32_t kLowerLimitDaysCount$
-    +int32_t kUpperLimitDaysCount$
+    +int kLowerLimitIntervalSize$
+    +int kUpperLimitIntervalSize$
+    +int kLowerLimitDaysCount$
+    +int kUpperLimitDaysCount$
     +string kDefaultLocation$
     -vector~string~ locations_
-    -int32_t interval_
-    -int32_t days_count_
-    -int32_t location_index_
+    -int interval_
+    -int days_count_
+    -int location_index_
     -bool is_valid_
     -Point coordinates_
     -time last_update_
@@ -83,18 +126,18 @@ classDiagram
     -WeatherTimeUnit current_weather_
     -JsonCache geocoder_cache_
     +IsValidConfig(string config)$ bool
-    +AddConfig(string config) int32_t
-    +ObtainForecast() int32_t
-    +SwapToNext() int32_t
-    +SwapToPrev() int32_t
+    +AddConfig(string config) int
+    +ObtainForecast() int
+    +SwapToNext() int
+    +SwapToPrev() int
     +GetForecast() vector~WeatherDay~
     +GetCurrentWeather() WeatherTimeUnit
     +GetLocation() string
     +IsValid() bool
-    -RequestPosition() int32_t
-    -RequestForecast() int32_t
-    -ProcessPosition() int32_t
-    -ProcessForecast() int32_t
+    -RequestPosition() int
+    -RequestForecast() int
+    -ProcessPosition() int
+    -ProcessForecast() int
   }
   class JsonCache {
     -string cache_group_
@@ -104,22 +147,22 @@ classDiagram
     -GetCacheFilename(string cache_name) string
   }
   class WeatherDay {
-    +int32_t kUnitsInDay$
+    +int kUnitsInDay$
     -vector~WeatherTimeUnit~ units_
-    +SetForecast(json forecast, int32_t day_number) void
+    +SetForecast(json forecast, int day_number) void
     +GetForecastUnits() vector~WeatherTimeUnit~
   }
   class WeatherTimeUnit {
     +map~string, string~ kChargeUnits$
     +string weather_type
-    +int32_t real_temperature
+    +int real_temperature
     +int32-t felt_temperature
-    +int32_t wind_speed_lower
-    +int32_t wind_speed_upper
-    +int32_t visibility
+    +int wind_speed_lower
+    +int wind_speed_upper
+    +int visibility
     +double precipitation
     +double uv_index
-    +int32_t humidity
+    +int humidity
     -string name_
     +GetAllAsMap() map~string, string~
     +GetName() string
