@@ -97,10 +97,11 @@ classDiagram
     -ProcessForecast() int32_t
   }
   class JsonCache {
-    -string cache_group
+    -string cache_group_
     -string cache_dir_
-    +PutJsonToCache(string name, json data) void
-    +GetJsonFromCache(string name) json
+    +PutJsonToCache(string cache_name, json data) void
+    +GetJsonFromCache(string cache_name) json
+    -GetCacheFilename(string cache_name) string
   }
   class WeatherDay {
     +int32_t kUnitsInDay$
@@ -119,7 +120,7 @@ classDiagram
     +double precipitation
     +double uv_index
     +int32_t humidity
-    -string name
+    -string name_
     +GetAllAsMap() map~string, string~
   }
   Forecaster *-- WeatherDay
