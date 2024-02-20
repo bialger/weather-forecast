@@ -25,8 +25,9 @@ class WeatherTimeUnit {
  public:
   static const std::map<std::string, std::string> kChargeUnits;
   static const WeatherCharName kShownNames;
+  static const std::map<int32_t, std::string> kWeatherCodeToString;
 
-  std::string weather_type;
+  int32_t weather_type;
   int32_t real_temperature{};
   int32_t felt_temperature{};
   int32_t wind_speed_lower{};

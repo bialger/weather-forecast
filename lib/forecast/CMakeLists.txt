@@ -12,6 +12,7 @@ add_library(forecast STATIC
 target_link_libraries(forecast PUBLIC
         cpr::cpr
         nlohmann_json::nlohmann_json
+        utils
 )
 
 target_include_directories(forecast PUBLIC ${PROJECT_SOURCE_DIR})

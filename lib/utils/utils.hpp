@@ -3,7 +3,11 @@
 
 #include <cstdint>
 #include <string_view>
+#include <algorithm>
+#include <vector>
 #include <iostream>
+#include <numeric>
+#include <map>
 
 #include "ErrorOutput.hpp"
 
@@ -68,5 +72,31 @@ std::string GetStringFromFile(const std::string& filename);
 /**\n This function writes string to stream. */
 
 void WriteStringToStream(const std::string& content, std::ostream& target);
+
+/**\n This function returns average value of the std::vector. */
+
+template<typename T, typename U = double>
+U CountAverage(const std::vector<T>& values) {
+  static_assert(std::is_arithmetic<std::decay_t<decltype(*values.begin())>>::value,
+                "Can only average arithmetic values");
+  return static_cast<U>(std::accumulate(values.begin(), values.end(), static_cast<U>(0)) / values.size());
+}
+
+/**\n This function returns the most common value in std::vector of an arithmetic type */
+
+template<typename T>
+T GetMostCommon(const std::vector<T>& values) {
+  static_assert(std::is_arithmetic<std::decay_t<decltype(*values.begin())>>::value,
+                "Can only find the most common arithmetic value");
+  std::map<T, T> map;
+  for (auto i : values)
+    map[i]++;
+
+  return std::max_element(map.begin(),
+                          map.end(),
+                          [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+                            return a.second < b.second;
+                          })->first;
+}
 
 #endif //UTILS_HPP_

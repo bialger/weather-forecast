@@ -1,5 +1,36 @@
 #include "WeatherTimeUnit.hpp"
 
+const std::map<int32_t, std::string> WeatherTimeUnit::kWeatherCodeToString = {
+    {0, "Clear sky"},
+    {1, "Mainly clear"},
+    {2, "Partly cloudy"},
+    {3, "Overcast"},
+    {45, "Fog"},
+    {48, "Depositing rime fog"},
+    {51, "Light drizzle"},
+    {53, "Medium drizzle"},
+    {55, "Hard drizzle"},
+    {56, "Light freezing drizzle"},
+    {57, "Hard freezing drizzle"},
+    {61, "Light rain"},
+    {63, "Medium rain"},
+    {65, "Hard rain"},
+    {66, "Light freezing rain"},
+    {67, "Hard freezing rain"},
+    {71, "Light snow fall"},
+    {73, "Medium snow fall"},
+    {75, "Hard snow fall"},
+    {77, "Snow grains"},
+    {80, "Light showering"},
+    {81, "Medium showering"},
+    {82, "Hard showering"},
+    {85, "Light snow shower"},
+    {86, "Hard snow shower"},
+    {95, "Light thunderstorm"},
+    {96, "Medium thunderstorm"},
+    {99, "Hard thunderstorm"}
+};
+
 const WeatherCharName WeatherTimeUnit::kShownNames = {
     .time = "Time",
     .weather_code = "Weather",
@@ -42,13 +73,13 @@ std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
   std::string str_visibility = std::string(128, '\0');
   std::snprintf(str_visibility.data(), str_visibility.size(), "%.2f", visibility);
   std::string str_pressure = std::string(128, '\0');
-  std::snprintf(str_pressure.data(), str_pressure.size(), "%.1f", pressure / 1000);
+  std::snprintf(str_pressure.data(), str_pressure.size(), "%.1f", pressure);
   std::string str_uv_index = std::string(128, '\0');
   std::snprintf(str_uv_index.data(), str_uv_index.size(), "%.2f", uv_index);
   std::string str_precipitation = std::string(128, '\0');
   std::snprintf(str_precipitation.data(), str_precipitation.size(), "%.1f", precipitation);
 
-  result[kShownNames.weather_code] = weather_type;
+  result[kShownNames.weather_code] = kWeatherCodeToString.at(weather_type);
   result[kShownNames.temperature] = std::to_string(real_temperature) + " (" +
       std::to_string(felt_temperature) + ") " + kChargeUnits.at(kShownNames.temperature);
   result[kShownNames.wind_speed] = std::to_string(wind_speed_lower) + " - " +
