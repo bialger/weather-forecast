@@ -1,5 +1,8 @@
 #include <iostream>
 #include <filesystem>
+#include <fstream>
+#include <vector>
+#include <limits>
 
 #include "utils.hpp"
 
@@ -103,6 +106,28 @@ bool IsDirectory(std::string& dirname) {
   std::filesystem::path path(dirname);
   return std::filesystem::is_directory(path);
 }
+
+std::streamsize GetFileSize(const std::string& filename) {
+  std::ifstream file(filename, std::ios::in|std::ios::binary);
+  file.ignore( std::numeric_limits<std::streamsize>::max() );
+  std::streamsize length = file.gcount();
+  file.clear();   //  Since ignore will have set eof.
+  file.seekg( 0, std::ios_base::beg );
+  return length;
+}
+
+std::string GetStringFromFile(const std::string& filename) {
+  std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+
+  std::streamsize file_size = GetFileSize(filename);
+  ifs.seekg(0, std::ios::beg);
+
+  std::vector<char> bytes(file_size);
+  ifs.read(bytes.data(), file_size);
+
+  return {bytes.data(), static_cast<size_t>(file_size)};
+}
+
 
 /* The code provides dummy function definitions for Windows console-related
  * functions when the code is being compiled in a non-Windows environment.

@@ -57,4 +57,12 @@ bool IsRegularFile(std::string& filename);
 
 bool IsDirectory(std::string& dirname);
 
+/**\n This function returns the size of a file. Does not use tellg(). */
+
+std::streamsize GetFileSize(const std::string& filename);
+
+/**\n This function returns the contents of a file as a string. */
+
+std::string GetStringFromFile(const std::string& filename);
+
 #endif //UTILS_HPP_

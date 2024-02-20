@@ -70,6 +70,7 @@ classDiagram
     +int32_t kUpperLimitIntervalSize$
     +int32_t kLowerLimitDaysCount$
     +int32_t kUpperLimitDaysCount$
+    +string kDefaultLocation$
     -vector~string~ locations_
     -int32_t interval_
     -int32_t days_count_

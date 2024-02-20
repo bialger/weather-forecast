@@ -1,7 +1,10 @@
 #include <fstream>
+#include <iterator>
 #include <functional>
 
 #include "ui_functions.hpp"
+#include "lib/forecast/Forecaster.hpp"
+#include "lib/utils/utils.hpp"
 #include "lib/argparser/ArgParser.hpp"
 #include "lib/ftxui/ftxui_interface.hpp"
 
@@ -10,47 +13,42 @@
 
 int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, std::istream& in) {
   SetOutputToUnicode();
-  constexpr int32_t kLowerLimitIntervalSize = 0; // that means use one from config
-  constexpr int32_t kUpperLimitIntervalSize = 49;
-  constexpr int32_t kLowerLimitDaysCount = 0; // that means use one from config
-  constexpr int32_t kUpperLimitDaysCount = 16;
   ErrorOutput error_output = {out, true};
   ArgumentParser::ArgParser parser("weather-forecast");
   std::vector<std::string> potential_config_dirs = GetPotentialConfigDirectories();
   CompositeString default_config_path = "default_config.json";
   CompositeString config_path;
-  std::string default_location = "First location in config";
   std::string interval_description = "Initial time between weather forecast updates in hours. Should be more than "
-      + std::to_string(kLowerLimitIntervalSize) + " and less than "
-      + std::to_string(kUpperLimitIntervalSize)
+      + std::to_string(Forecaster::kLowerLimitIntervalSize) + " and less than "
+      + std::to_string(Forecaster::kUpperLimitIntervalSize)
       + ". The default value means using the parameter from the configuration file.";
   std::string days_count_description = "Initial number of days for which the forecast is shown. Should be more than "
-      + std::to_string(kLowerLimitDaysCount) + " and less than "
-      + std::to_string(kUpperLimitDaysCount)
+      + std::to_string(Forecaster::kLowerLimitDaysCount) + " and less than "
+      + std::to_string(Forecaster::kUpperLimitDaysCount)
       + ". The default value means using the parameter from the configuration file.";
 
   std::function<bool(std::string&)> IsGoodIntervalLength = [&](std::string& str_size) -> bool {
     int32_t block_size = std::stoi(str_size);
-    return block_size > kLowerLimitIntervalSize && block_size < kUpperLimitIntervalSize;
+    return block_size > Forecaster::kLowerLimitIntervalSize && block_size < Forecaster::kUpperLimitIntervalSize;
   };
 
   std::function<bool(std::string&)> IsGoodDaysCount = [&](std::string& str_count) -> bool {
     int32_t days_count = std::stoi(str_count);
-    return days_count > kLowerLimitDaysCount && days_count < kUpperLimitDaysCount;
+    return days_count > Forecaster::kLowerLimitDaysCount && days_count < Forecaster::kUpperLimitDaysCount;
   };
 
   parser.AddCompositeArgument('c', "config", "Path to the configuration file").Default(default_config_path)
       .StoreValue(config_path).AddValidate(&IsValidFilename).AddIsGood(&IsRegularFile);
-  parser.AddStringArgument('l', "location", "Name of the location for which the forecast is requested").Default(
-      default_location);
+  parser.AddStringArgument('l', "location", "Name of the location for which the forecast is requested")
+      .Default(Forecaster::kDefaultLocation);
   parser.AddIntArgument('i',
                         "interval",
                         interval_description.c_str())
-      .Default(kLowerLimitIntervalSize).AddIsGood(IsGoodIntervalLength);
+      .Default(Forecaster::kLowerLimitIntervalSize).AddIsGood(IsGoodIntervalLength);
   parser.AddIntArgument('d',
                         "days-count",
                         days_count_description.c_str())
-      .Default(kLowerLimitDaysCount).AddIsGood(IsGoodDaysCount);
+      .Default(Forecaster::kLowerLimitDaysCount).AddIsGood(IsGoodDaysCount);
   parser.AddHelp('h', "help", "A program for displaying the weather forecast in the terminal.");
 
   if (!parser.Parse(args, error_output)) {
@@ -78,8 +76,21 @@ int32_t StartConsoleUI(const std::vector<std::string>& args, std::ostream& out, 
     return 1;
   }
 
-  std::ifstream file(config_path);
-  nlohmann::json config = nlohmann::json::parse(file);
+  return BeginForecast(parser.GetIntValue("interval"),
+                       parser.GetIntValue("days-count"),
+                       parser.GetStringValue("location"),
+                       config_path,
+                       out,
+                       in);
+}
+
+int32_t BeginForecast(int32_t interval,
+                      int32_t days_count,
+                      const std::string& location,
+                      const std::string& config_path,
+                      std::ostream& out,
+                      std::istream& in) {
+  std::string config_contents = GetStringFromFile(config_path);
 
   return 0;
 }
