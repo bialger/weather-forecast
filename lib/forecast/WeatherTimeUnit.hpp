@@ -15,7 +15,8 @@ class WeatherTimeUnit {
   int32_t felt_temperature{};
   int32_t wind_speed_lower{};
   int32_t wind_speed_upper{};
-  int32_t visibility{};
+  double visibility{};
+  double pressure{};
   double precipitation{};
   double uv_index{};
   int32_t humidity{};

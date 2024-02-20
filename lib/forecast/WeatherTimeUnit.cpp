@@ -4,6 +4,7 @@ const std::map<std::string, std::string>WeatherTimeUnit::kChargeUnits = {
     {"Temperature", "°C"},
     {"Wind speed", "km/h"},
     {"Visibility", "km"},
+    {"Pressure", "hPa"},
     {"Precipitation", "mm"},
     {"Humidity", "%"}
 };
@@ -24,6 +25,10 @@ std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
     uv_level = "Very high";
   }
 
+  std::string str_visibility = std::string(128, '\0');
+  std::snprintf(str_visibility.data(), str_visibility.size(), "%.2f", visibility);
+  std::string str_pressure = std::string(128, '\0');
+  std::snprintf(str_pressure.data(), str_pressure.size(), "%.1f", pressure / 1000);
   std::string str_uv_index = std::string(128, '\0');
   std::snprintf(str_uv_index.data(), str_uv_index.size(), "%.2f", uv_index);
   std::string str_precipitation = std::string(128, '\0');
@@ -34,7 +39,8 @@ std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
       + kChargeUnits.at("Temperature");
   result["Wind speed"] = std::to_string(wind_speed_lower) + " - " +
       std::to_string(wind_speed_upper) + " " + kChargeUnits.at("Wind speed");
-  result["Visibility"] = std::to_string(visibility) + " " + kChargeUnits.at("Visibility");
+  result["Visibility"] = str_visibility + " " + kChargeUnits.at("Visibility");
+  result["Pressure"] = str_pressure + " " + kChargeUnits.at("Pressure");
   result["Precipitation"] = str_precipitation + " " + kChargeUnits.at("Precipitation");
   result["UV index"] = str_uv_index + " (" + uv_level + ")";
   result["Humidity"] = std::to_string(humidity) + " " + kChargeUnits.at("Humidity");
