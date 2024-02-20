@@ -117,10 +117,9 @@ std::streamsize GetFileSize(const std::string& filename) {
 }
 
 std::string GetStringFromFile(const std::string& filename) {
-  std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+  std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary);
 
   std::streamsize file_size = GetFileSize(filename);
-  ifs.seekg(0, std::ios::beg);
 
   std::vector<char> bytes(file_size);
   ifs.read(bytes.data(), file_size);
@@ -128,6 +127,9 @@ std::string GetStringFromFile(const std::string& filename) {
   return {bytes.data(), static_cast<size_t>(file_size)};
 }
 
+bool WriteStringToStream(const std::string& content, std::ostream& target) {
+  target.write(content.c_str(), static_cast<std::streamsize>(content.size()));
+}
 
 /* The code provides dummy function definitions for Windows console-related
  * functions when the code is being compiled in a non-Windows environment.
