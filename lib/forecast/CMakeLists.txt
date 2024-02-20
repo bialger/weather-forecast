@@ -7,6 +7,8 @@ add_library(forecast STATIC
         WeatherDay.hpp
         WeatherTimeUnit.cpp
         WeatherTimeUnit.hpp
+        Geocoder.cpp
+        Geocoder.hpp
 )
 
 target_link_libraries(forecast PUBLIC

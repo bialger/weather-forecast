@@ -41,6 +41,8 @@ WeatherDay::WeatherDay() {
   units_.emplace_back("Evening");
 }
 
+const std::string WeatherDay::kWeatherUrl = "https://api.open-meteo.com/v1/forecast";
+
 WeatherTimeUnit WeatherDay::GetCurrentWeather(const json& forecast) {
   WeatherTimeUnit time_unit("Now");
 

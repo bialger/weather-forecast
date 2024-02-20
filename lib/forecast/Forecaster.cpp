@@ -1,7 +1,6 @@
 #include <regex>
 
 #include "Forecaster.hpp"
-#include "JsonCache.hpp"
 
 #include <cpr/cpr.h>
 
@@ -70,21 +69,11 @@ int32_t Forecaster::AddConfig(const std::string& str_config) {
     return 1;
   }
 
-  std::ifstream api_key_file_(api_key_path);
-  std::string api_key = std::string((std::istreambuf_iterator<char>(api_key_file_)),
-                                    std::istreambuf_iterator<char>());
+  int32_t result = geocoder_.SetApiKey(api_key_path);
 
-  if (api_key.size() < 36) {
-    DisplayError("API key is too small!\n", error_output_);
-    return 1;
-  }
-
-  api_key = api_key.substr(0, 36);
-  std::regex yandex_api_regex = std::regex(R"(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$)");
-
-  if (!std::regex_match(api_key, yandex_api_regex)) {
+  if (result != 0) {
     DisplayError("Invalid API key!\n", error_output_);
-    return 1;
+    return result;
   }
 
   if (locations_.empty()) {
@@ -103,7 +92,6 @@ int32_t Forecaster::AddConfig(const std::string& str_config) {
   std::clamp(interval_, kLowerLimitIntervalSize + 1, kUpperLimitIntervalSize - 1);
   std::clamp(days_count_, kLowerLimitDaysCount + 1, kUpperLimitDaysCount - 1);
   std::clamp(location_index_, 0, static_cast<int32_t>(listed_locations_size + locations_.size() - 1));
-  api_key_ = api_key;
   is_valid_ = true;
 
   for (size_t i = 0; i < listed_locations_size; ++i) {
@@ -200,12 +188,10 @@ int32_t Forecaster::RequestPosition() {
     return ProcessPosition(answer);
   }
 
-  const std::string kGeocoderUrl = "https://geocode-maps.yandex.ru/1.x";
-
-  cpr::Response city_response = cpr::Get(cpr::Url(kGeocoderUrl),
+  cpr::Response city_response = cpr::Get(cpr::Url(Geocoder::kGeocoderUrl),
                                          cpr::Parameters{
                                              {"geocode", locations_[location_index_]},
-                                             {"apikey", api_key_},
+                                             {"apikey", geocoder_.GetApiKey()},
                                              {"format", "json"}
                                          });
 
@@ -223,7 +209,6 @@ int32_t Forecaster::RequestPosition() {
 
 int32_t Forecaster::RequestForecast() {
   json answer{};
-  const std::string kOpenMeteoUrl = "https://api.open-meteo.com/v1/forecast";
 
   std::string current_list = WeatherDay::kOpenMeteoNames.temperature + "," + WeatherDay::kOpenMeteoNames.humidity + ","
       + WeatherDay::kOpenMeteoNames.apparent_temperature + "," + WeatherDay::kOpenMeteoNames.precipitation + ","
@@ -235,10 +220,10 @@ int32_t Forecaster::RequestForecast() {
       + WeatherDay::kOpenMeteoNames.visibility + "," + WeatherDay::kOpenMeteoNames.wind_speed;
   std::string daily_list = WeatherDay::kOpenMeteoNames.uv_index;
 
-  cpr::Response open_meteo_response = cpr::Get(cpr::Url(kOpenMeteoUrl),
+  cpr::Response open_meteo_response = cpr::Get(cpr::Url(WeatherDay::kWeatherUrl),
                                          cpr::Parameters{
-                                             {"latitude", coordinates_.first},
-                                             {"longitude", coordinates_.second},
+                                             {"latitude", geocoder_.GetLatitude()},
+                                             {"longitude", geocoder_.GetLongitude()},
                                              {"current", current_list},
                                              {"hourly", hourly_list},
                                              {"daily", daily_list},
@@ -259,28 +244,14 @@ int32_t Forecaster::RequestForecast() {
 }
 
 int32_t Forecaster::ProcessPosition(const json& answer) {
-  if (!answer.is_object()
-      || !answer.contains("response")
-      || !answer["response"].contains("GeoObjectCollection")
-      || !answer["response"]["GeoObjectCollection"].contains("featureMember")
-      || !answer["response"]["GeoObjectCollection"]["featureMember"].is_array()
-      || !answer["response"]["GeoObjectCollection"]["featureMember"][0].is_object()
-      || !answer["response"]["GeoObjectCollection"]["featureMember"][0].contains("GeoObject")
-      || !answer["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"].contains("Point")
-      || !answer["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"].contains("pos")
-      || !answer["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"].is_string()) {
+  int32_t result = geocoder_.SetCoordinates(answer);
+
+  if (result != 0) {
     DisplayError("Unknown error occurred while geocoding.\n", error_output_);
-    return 1;
+    return result;
   }
 
   geocoder_cache_.PutJsonToCache(locations_[location_index_], answer);
-
-  std::vector<std::string> positions = Split(
-      answer["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"].get<std::string>()
-  );
-
-  coordinates_.first = positions[1]; // longitude
-  coordinates_.second = positions[0]; // latitude
 
   return 0;
 }

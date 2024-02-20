@@ -3,6 +3,7 @@
 
 #include "JsonCache.hpp"
 #include "WeatherDay.hpp"
+#include "Geocoder.hpp"
 #include "lib/utils/utils.hpp"
 
 class Forecaster {
@@ -44,8 +45,7 @@ class Forecaster {
   bool is_valid_;
   std::string config_dir_;
   std::string last_time_;
-  std::pair<std::string, std::string> coordinates_{};
-  std::string api_key_{};
+  Geocoder geocoder_{};
   std::vector<WeatherDay> forecast_{};
   WeatherTimeUnit current_weather_;
   JsonCache geocoder_cache_;
