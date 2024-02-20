@@ -12,6 +12,7 @@ class Forecaster {
   static constexpr int32_t kLowerLimitDaysCount = 0;
   static constexpr int32_t kUpperLimitDaysCount = 16;
   static const std::string kDefaultLocation;
+  static const WeatherCharName kOpenMeteoNames;
 };
 
 #endif //FORECASTER_HPP_
