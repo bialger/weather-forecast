@@ -123,8 +123,7 @@ classDiagram
     -int location_index_
     -bool is_valid_
     -string config_dir_
-    -pair~string, string~ coordinates_
-    -string api_key_
+    -Geocoder geocoder_
     -vector~WeatherDay~ forecast_
     -WeatherTimeUnit current_weather_
     -JsonCache geocoder_cache_
@@ -160,6 +159,7 @@ classDiagram
     +int kDaysInForecast$
     +map~int, string~ kWeatherCodeToString$
     +WeatherCharNames kShownNames$
+    +string kWeatherUrl$
     -string date_
     -vector~WeatherTimeUnit~ units_
     -map~string, json~ hourly_values_
@@ -201,6 +201,17 @@ classDiagram
     +string humidity
     +string dates
   }
+  class Geocoder {
+    +string KGeocoderUrl$
+    -string longitude_
+    -string latitude_
+    -string api_key_
+    +SetCoordinates(json geocode) int
+    +SetApiKey(string path) int
+    +GetLongitude() string
+    +GetLatitude() string
+  }
+  Forecaster *-- Geocoder
   Forecaster *-- WeatherTimeUnit
   Forecaster *-- WeatherDay
   Forecaster *-- JsonCache
@@ -224,6 +235,13 @@ classDiagram
 Этот класс является абстракцией для представления кешированного результата запроса к
 API в формате JSON. Должен содержать методы для кеширования и получения из кэша
 запроса по имени.
+
+#### Класс Geocoder
+
+Этот класс представляет собой набор данных для геокодирования. Должен содержать 
+информацию для выполнения запроса и его результат. Должен содержать методы для 
+обработки конфигурационных файлов и ответов. Не обязан иметь метод для 
+Internet-запроса.
 
 #### Класс WeatherDay
 
