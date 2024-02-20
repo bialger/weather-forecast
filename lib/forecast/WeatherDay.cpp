@@ -35,10 +35,10 @@ WeatherDay::WeatherDay() {
       {kOpenMeteoNames.dates, {}}
   };
 
+  units_.emplace_back("Night");
   units_.emplace_back("Morning");
   units_.emplace_back("Day");
   units_.emplace_back("Evening");
-  units_.emplace_back("Night");
 }
 
 WeatherTimeUnit WeatherDay::GetCurrentWeather(const json& forecast) {

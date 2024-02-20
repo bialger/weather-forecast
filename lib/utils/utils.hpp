@@ -73,6 +73,10 @@ std::string GetStringFromFile(const std::string& filename);
 
 void WriteStringToStream(const std::string& content, std::ostream& target);
 
+/**\n This function splits a string into a vector of strings. */
+
+std::vector<std::string> Split(const std::string& str);
+
 /**\n This function returns average value of the std::vector. */
 
 template<typename T, typename U = double>

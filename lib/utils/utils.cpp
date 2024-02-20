@@ -3,6 +3,9 @@
 #include <fstream>
 #include <vector>
 #include <limits>
+#include <iterator>
+#include <sstream>
+
 
 #include "utils.hpp"
 
@@ -35,13 +38,15 @@ void DisplayError(const std::string& message, ErrorOutput error_output) {
     return;
   }
 
-  if (&error_output.error_stream == &std::cout) {
+  bool is_console_output = &error_output.error_stream == &std::cout || &error_output.error_stream == &std::cerr;
+
+  if (is_console_output) {
     SetRedColor();
   }
 
   error_output.error_stream << message;
 
-  if (&error_output.error_stream == &std::cout) {
+  if (is_console_output) {
     ResetColor();
   }
 }
@@ -129,6 +134,12 @@ std::string GetStringFromFile(const std::string& filename) {
 
 void WriteStringToStream(const std::string& content, std::ostream& target) {
   target.write(content.c_str(), static_cast<std::streamsize>(content.size()));
+}
+
+std::vector<std::string> Split(const std::string& str) {
+  std::istringstream iss(str);
+
+  return {std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>()};
 }
 
 /* The code provides dummy function definitions for Windows console-related
