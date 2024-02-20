@@ -9,6 +9,8 @@ using json = nlohmann::json;
 
 class JsonCache {
  public:
+  static const json kNotFound;
+
   JsonCache() = delete;
   JsonCache(const std::string& cache_group, const std::string& cache_dir);
 

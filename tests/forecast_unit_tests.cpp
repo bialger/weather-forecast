@@ -21,5 +21,13 @@ TEST_F(ForecastUnitTestSuite, JsonCachePutGetTest1) {
   JsonCache cache("tests", kTemporaryDirectoryName);
   cache.PutJsonToCache("sample", kSampleData);
   json opened = cache.GetJsonFromCache("sample");
-  ASSERT_TRUE(std::equal(kSampleData.begin(), kSampleData.end(), opened.begin(), opened.end()));
+  ASSERT_FALSE(JsonCache::kNotFound == opened);
+  ASSERT_TRUE(kSampleData == opened);
+}
+
+TEST_F(ForecastUnitTestSuite, JsonCacheGetNegativeTest1) {
+  JsonCache cache("tests", kTemporaryDirectoryName);
+  json opened = cache.GetJsonFromCache("unavailable_cache");
+  ASSERT_TRUE(JsonCache::kNotFound == opened);
+  ASSERT_FALSE(kSampleData == opened);
 }

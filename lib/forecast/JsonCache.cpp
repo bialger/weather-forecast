@@ -4,6 +4,8 @@
 #include "lib/utils/utils.hpp"
 #include "lib/utils/utils.hpp"
 
+const json JsonCache::kNotFound = "{}";
+
 JsonCache::JsonCache(const std::string& cache_group, const std::string& common_cache_dir) {
   cache_group_ = cache_group;
   cache_dir_ = common_cache_dir + "/cache/" + cache_group_;
@@ -19,6 +21,10 @@ void JsonCache::PutJsonToCache(const std::string& cache_name, const json& data) 
 }
 
 json JsonCache::GetJsonFromCache(const std::string& cache_name) {
+  if (!std::filesystem::is_regular_file(GetCacheFilename(cache_name))) {
+    return kNotFound;
+  }
+
   std::ifstream cache_file(GetCacheFilename(cache_name).c_str());
   json data = json::parse(cache_file);
   return data;
