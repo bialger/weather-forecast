@@ -122,27 +122,30 @@ classDiagram
     -int days_count_
     -int location_index_
     -bool is_valid_
-    -Point coordinates_
-    -time last_update_
-    -json config_
+    -string config_dir_
+    -pair~string, string~ coordinates_
+    -string api_key_
     -vector~WeatherDay~ forecast_
     -WeatherTimeUnit current_weather_
     -JsonCache geocoder_cache_
-    +IsValidConfig(string config)$ bool
-    +AddConfig(string config) int
+    -ErrorOutput error_output_
+    +IsValidConfig(string str_config)$ bool
     +ObtainForecast() int
     +SwapToNext() int
     +SwapToPrev() int
+    +AddDay() int
+    +RemoveDay() int
     +GetForecast() vector~WeatherDay~
     +GetCurrentWeather() WeatherTimeUnit
     +GetLocation() string
     +GetLastForecastTime() string
     +GetSleepInterval() int
     +IsValid() bool
+    -AddConfig(string str_config) int
     -RequestPosition() int
     -RequestForecast() int
-    -ProcessPosition() int
-    -ProcessForecast() int
+    -ProcessPosition(json answer) int
+    -ProcessForecast(json answer) int
   }
   class JsonCache {
     -string cache_group_
