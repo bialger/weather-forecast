@@ -28,6 +28,9 @@ fabric.properties
 # API keys
 *.apikey
 
+# Cache directories
+**cache*/
+
 # Prerequisites
 *.d
 
