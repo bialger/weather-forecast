@@ -1,7 +1,7 @@
 #include "WeatherTimeUnit.hpp"
 
 const std::map<std::string, std::string>WeatherTimeUnit::kChargeUnits = {
-    {"Temperature", "C"},
+    {"Temperature", "°C"},
     {"Wind speed", "km/h"},
     {"Visibility", "km"},
     {"Precipitation", "mm"},
@@ -25,7 +25,7 @@ std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
   }
 
   std::string str_uv_index = std::string(128, '\0');
-  std::snprintf(str_uv_index.data(), str_uv_index.size(), "%.1f", uv_index);
+  std::snprintf(str_uv_index.data(), str_uv_index.size(), "%.2f", uv_index);
   std::string str_precipitation = std::string(128, '\0');
   std::snprintf(str_precipitation.data(), str_precipitation.size(), "%.1f", precipitation);
 
