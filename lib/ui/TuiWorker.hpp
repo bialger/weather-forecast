@@ -24,7 +24,7 @@ class TuiWorker {
   int32_t Run();
 
  private:
-  static const int32_t kMaxWidth = 40;
+  static const int32_t kMaxWidth = 45;
   static const int32_t kMaxHeight = 12;
   static const int32_t kFocusLen = 3;
   Forecaster& forecaster_;
