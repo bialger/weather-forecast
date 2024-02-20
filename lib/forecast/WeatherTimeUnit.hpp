@@ -2,13 +2,29 @@
 #define WEATHERTIMEUNIT_H_
 
 #include <string>
+#include <cstdint>
 #include <map>
 
 #include <nlohmann/json.hpp>
 
+struct WeatherCharName {
+  std::string time;
+  std::string weather_code;
+  std::string temperature;
+  std::string apparent_temperature;
+  std::string wind_speed;
+  std::string visibility;
+  std::string pressure;
+  std::string precipitation;
+  std::string uv_index;
+  std::string humidity;
+  std::string dates;
+};
+
 class WeatherTimeUnit {
  public:
   static const std::map<std::string, std::string> kChargeUnits;
+  static const WeatherCharName kShownNames;
 
   std::string weather_type;
   int32_t real_temperature{};
@@ -23,7 +39,7 @@ class WeatherTimeUnit {
 
   explicit WeatherTimeUnit(const std::string& name);
 
-  std::map<std::string, std::string> GetAllAsMap() const;
+  [[nodiscard]] std::map<std::string, std::string> GetAllAsMap() const;
 
  private:
   std::string name_;
