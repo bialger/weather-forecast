@@ -63,21 +63,24 @@ title: Diagram of the module UI
 %%{
   init: {
     'theme': 'base',
-    'classDiagram': { 'curve': 'linaer' },
+    'classDiagram': { 'curve': 'linear' },
   }
 }%%
 classDiagram
   direction TB
   class TextUserInterface {
     +string kProgramName$
+    +CompositeString kDefaultConfigPath$
+    -string kIntervalDescription$
+    -string kDaysCountDescription$
     -ostream& out_
     -istream& in_
     -ErrorOutput error_output_
     -ArgParser parser_
-    -string config_path_
+    -CompositeString config_path_
+    +GetPotentialConfigDirectories()$ vector~string~
     +Run(vector~string~ args) int
     -BeginForecast() int
-    -GetPotentialConfigDirectories() vector~string~
     -GetBoxForTimeUint(WeatherTimeUnit time_unit) vbox
   }
 ```
@@ -103,7 +106,7 @@ title: Diagram of the module Forecast
 %%{
   init: {
     'theme': 'base',
-    'classDiagram': { 'curve': 'linaer' },
+    'classDiagram': { 'curve': 'linear' },
   }
 }%%
 classDiagram
@@ -216,7 +219,7 @@ title: Diagram of the module ArgParser
 %%{
   init: {
     'theme': 'base',
-    'classDiagram': { 'curve': 'linaer' },
+    'classDiagram': { 'curve': 'linear' },
   }
 }%%
 classDiagram
