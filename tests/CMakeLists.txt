@@ -22,10 +22,16 @@ add_executable(
         WeatherForecastIntegrationTestSuite.hpp
         ArgParserUnitTestSuite.cpp
         ArgParserUnitTestSuite.hpp
+        ForecastUnitTestSuite.cpp
+        ForecastUnitTestSuite.hpp
+        forecast_unit_tests.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_tests PUBLIC
         ui
+        utils
+        forecast
+        nlohmann_json::nlohmann_json
         argparser
         GTest::gtest_main
         PRIVATE argparser_basic
