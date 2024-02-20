@@ -136,6 +136,8 @@ classDiagram
     +GetForecast() vector~WeatherDay~
     +GetCurrentWeather() WeatherTimeUnit
     +GetLocation() string
+    +GetLastForecastTime() string
+    +GetSleepInterval() int
     +IsValid() bool
     -RequestPosition() int
     -RequestForecast() int
@@ -151,9 +153,11 @@ classDiagram
   }
   class WeatherDay {
     +int kUnitsInDay$
+    -string date_
     -vector~WeatherTimeUnit~ units_
     +SetForecast(json forecast, int day_number) void
     +GetForecastUnits() vector~WeatherTimeUnit~
+    +GetDate() string
   }
   class WeatherTimeUnit {
     +map~string, string~ kChargeUnits$
@@ -162,9 +166,10 @@ classDiagram
     +int felt_temperature
     +int wind_speed_lower
     +int wind_speed_upper
-    +int visibility
-    +double precipitation
-    +double uv_index
+    +double visibility;
+    +double pressure;
+    +double precipitation;
+    +double uv_index;
     +int humidity
     -string name_
     +GetAllAsMap() map~string, string~
