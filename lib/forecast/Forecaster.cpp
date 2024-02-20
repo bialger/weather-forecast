@@ -1,4 +1,5 @@
 #include "Forecaster.hpp"
+#include "JsonCache.hpp"
 
 #include <cpr/cpr.h>
 
