@@ -1,6 +1,6 @@
 add_library(ui STATIC
-        ui_functions.cpp
-        ui_functions.hpp
+        TextUserInterface.cpp
+        TextUserInterface.hpp
 )
 
 target_link_libraries(ui PUBLIC

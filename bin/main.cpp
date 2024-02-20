@@ -1,5 +1,9 @@
-#include "lib/ui/ui_functions.hpp"
+#include "lib/ui/TextUserInterface.hpp"
+
+#include "lib/utils/utils.hpp"
 
 int main(int argc, char** argv) {
-  return StartConsoleUI(std::vector<std::string>(argv, argv + argc), std::cout, std::cin);
+  SetOutputToUnicode();
+  TextUserInterface tui(std::cout, std::cerr, std::cin);
+  return tui.Start(std::vector<std::string>(argv, argv + argc));
 }
