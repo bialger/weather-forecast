@@ -11,7 +11,7 @@ class WeatherDay {
  public:
   static constexpr int32_t kUnitsInDay = 4;
   static constexpr int32_t kHoursInDay = 24;
-  static constexpr int32_t kDaysInForecast = 16;
+  static constexpr int32_t kDaysInForecast = 15;
   static const WeatherCharName kOpenMeteoNames;
   static const std::string kWeatherUrl;
 

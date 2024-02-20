@@ -88,19 +88,21 @@ U CountAverage(const std::vector<T>& values) {
 
 /**\n This function returns the most common value in std::vector of an arithmetic type */
 
-template<typename T>
-T GetMostCommon(const std::vector<T>& values) {
-  static_assert(std::is_arithmetic<std::decay_t<decltype(*values.begin())>>::value,
-                "Can only find the most common arithmetic value");
-  std::map<T, T> map;
-  for (auto i : values)
-    map[i]++;
-
-  return std::max_element(map.begin(),
-                          map.end(),
-                          [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
-                            return a.second < b.second;
-                          })->first;
+template<class InputIt, class T = typename std::iterator_traits<InputIt>::value_type>
+T MostCommon(InputIt begin, InputIt end)
+{
+  std::map<T, int> counts;
+  for (InputIt it = begin; it != end; ++it) {
+    if (counts.find(*it) != counts.end()) {
+      ++counts[*it];
+    }
+    else {
+      counts[*it] = 1;
+    }
+  }
+  return std::max_element(counts.begin(), counts.end(),
+                          [] (const std::pair<T, int>& pair1, const std::pair<T, int>& pair2) {
+                            return pair1.second < pair2.second;})->first;
 }
 
 #endif //UTILS_HPP_

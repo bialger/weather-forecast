@@ -1,6 +1,8 @@
 add_library(ui STATIC
         TextUserInterface.cpp
         TextUserInterface.hpp
+        TuiWorker.cpp
+        TuiWorker.hpp
 )
 
 target_link_libraries(ui PUBLIC

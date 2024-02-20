@@ -2,20 +2,21 @@
 #include <iterator>
 #include <functional>
 
+#include "TuiWorker.hpp"
 #include "TextUserInterface.hpp"
-#include "lib/forecast/Forecaster.hpp"
-#include "lib/ftxui/ftxui_interface.hpp"
 
 const std::string TextUserInterface::kProgramName = "weather-forecast";
 const CompositeString TextUserInterface::kDefaultConfigPath = "default_config.json";
-const std::string TextUserInterface::kIntervalDescription = "Initial time between weather forecast updates in hours. Should be more than "
-    + std::to_string(Forecaster::kLowerLimitIntervalSize) + " and less than "
-    + std::to_string(Forecaster::kUpperLimitIntervalSize)
-    + ". The default value means using the parameter from the configuration file.";
-const std::string TextUserInterface::kDaysCountDescription = "Initial number of days for which the forecast is shown. Should be more than "
-    + std::to_string(Forecaster::kLowerLimitDaysCount) + " and less than "
-    + std::to_string(Forecaster::kUpperLimitDaysCount)
-    + ". The default value means using the parameter from the configuration file.";
+const std::string TextUserInterface::kIntervalDescription =
+    "Initial time between weather forecast updates in hours. Should be more than "
+        + std::to_string(Forecaster::kLowerLimitIntervalSize) + " and less than "
+        + std::to_string(Forecaster::kUpperLimitIntervalSize)
+        + ". The default value means using the parameter from the configuration file.";
+const std::string TextUserInterface::kDaysCountDescription =
+    "Initial number of days for which the forecast is shown. Should be more than "
+        + std::to_string(Forecaster::kLowerLimitDaysCount) + " and less than "
+        + std::to_string(Forecaster::kUpperLimitDaysCount)
+        + ". The default value means using the parameter from the configuration file.";
 
 TextUserInterface::TextUserInterface(std::ostream& out, std::ostream& err, std::istream& in)
     : out_(out), in_(in), error_output_{err, true}, parser_(kProgramName.c_str()) {
@@ -74,13 +75,45 @@ int32_t TextUserInterface::Start(const std::vector<std::string>& args) {
     return 1;
   }
 
-  return BeginForecast();
+  int32_t result = BeginForecast();
+  DisplayError(background_err_.str(), error_output_);
+
+  return result;
 }
 
 int32_t TextUserInterface::BeginForecast() {
   std::string config_contents = GetStringFromFile(config_path_);
   std::string config_dir =
       std::filesystem::absolute(std::filesystem::path(config_path_.c_str())).parent_path().string();
+  ErrorOutput background_output{background_err_, true};
+  int32_t result = 0;
+  Forecaster forecaster(
+      parser_.GetIntValue("interval"),
+      parser_.GetIntValue("days-count"),
+      parser_.GetStringValue("location"),
+      config_dir,
+      config_contents,
+      result,
+      background_output
+  );
+
+  if (result != 0) {
+    return result;
+  }
+
+  result = forecaster.ObtainForecast();
+
+  if (result != 0) {
+    return result;
+  }
+
+  TuiWorker worker(forecaster);
+
+  result = worker.Run();
+
+  if (result != 0) {
+    return result;
+  }
 
   return 0;
 }

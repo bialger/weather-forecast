@@ -28,7 +28,8 @@ const std::map<int32_t, std::string> WeatherTimeUnit::kWeatherCodeToString = {
     {86, "Hard snow shower"},
     {95, "Light thunderstorm"},
     {96, "Medium thunderstorm"},
-    {99, "Hard thunderstorm"}
+    {99, "Hard thunderstorm"},
+    {100, "Undefined"}
 };
 
 const WeatherCharName WeatherTimeUnit::kShownNames = {
@@ -91,4 +92,8 @@ std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
   result[kShownNames.humidity] = std::to_string(humidity) + " " + kChargeUnits.at(kShownNames.humidity);
 
   return result;
+}
+
+std::string WeatherTimeUnit::GetName() const {
+  return name_;
 }

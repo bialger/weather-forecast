@@ -4,7 +4,7 @@
 #include "Geocoder.hpp"
 #include "lib/utils/utils.hpp"
 
-const std::string Geocoder::kGeocoderUrl = "https://geocode-maps.yandex.ru/1.x";
+const std::string Geocoder::kGeocoderUrl = "http://geocode-maps.yandex.ru/1.x";
 
 int32_t Geocoder::SetCoordinates(const json& geocode) {
   if (!geocode.is_object()

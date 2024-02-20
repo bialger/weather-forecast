@@ -8,7 +8,7 @@
 
 #include "lib/utils/utils.hpp"
 #include "lib/argparser/ArgParser.hpp"
-#include "lib/ftxui/ftxui_interface.hpp"
+#include "lib/forecast/Forecaster.hpp"
 
 class TextUserInterface {
  public:
@@ -25,9 +25,11 @@ class TextUserInterface {
  private:
   static const std::string kIntervalDescription;
   static const std::string kDaysCountDescription;
+
   std::ostream& out_;
   std::istream& in_;
   ErrorOutput error_output_;
+  std::ostringstream background_err_{};
   ArgumentParser::ArgParser parser_;
   CompositeString config_path_;
 

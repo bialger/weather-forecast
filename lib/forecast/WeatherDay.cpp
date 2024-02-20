@@ -41,7 +41,7 @@ WeatherDay::WeatherDay() {
   units_.emplace_back("Evening");
 }
 
-const std::string WeatherDay::kWeatherUrl = "https://api.open-meteo.com/v1/forecast";
+const std::string WeatherDay::kWeatherUrl = "http://api.open-meteo.com/v1/forecast";
 
 WeatherTimeUnit WeatherDay::GetCurrentWeather(const json& forecast) {
   WeatherTimeUnit time_unit("Now");
@@ -73,7 +73,7 @@ WeatherTimeUnit WeatherDay::GetCurrentWeather(const json& forecast) {
   time_unit.felt_temperature = static_cast<int32_t>(std::round(current[kOpenMeteoNames.apparent_temperature].get<double>()));
   time_unit.wind_speed_lower = static_cast<int32_t>(std::round(current[kOpenMeteoNames.wind_speed].get<double>()));
   time_unit.wind_speed_upper = time_unit.wind_speed_lower;
-  time_unit.visibility = hourly[kOpenMeteoNames.visibility][hour].get<double>();
+  time_unit.visibility = hourly[kOpenMeteoNames.visibility][hour].get<double>() / 1000;
   time_unit.pressure = current[kOpenMeteoNames.pressure].get<double>();
   time_unit.precipitation = current[kOpenMeteoNames.precipitation].get<double>();
   time_unit.uv_index = daily[kOpenMeteoNames.uv_index][0].get<double>();
@@ -94,54 +94,78 @@ bool WeatherDay::SetForecast(const json& forecast, int32_t day_number) {
   const size_t end_index = start_index + kHoursInDay - 1;
   const size_t kHoursInUnit = kHoursInDay / kUnitsInDay;
 
-  std::vector<int32_t> weather_codes(kHoursInUnit);
-  std::vector<double> real_temperatures(kHoursInUnit);
-  std::vector<double> apparent_temperatures(kHoursInUnit);
-  std::vector<double> wind_speeds(kHoursInUnit);
-  std::vector<double> visibilities(kHoursInUnit);
-  std::vector<double> pressures(kHoursInUnit);
-  std::vector<double> precipitations(kHoursInUnit);
-  std::vector<int32_t> humidities(kHoursInUnit);
-
-  for (size_t unit_index = 0; unit_index <= kUnitsInDay; ++unit_index) {
+  for (size_t unit_index = 0; unit_index < kUnitsInDay; ++unit_index) {
     WeatherTimeUnit& unit = units_[unit_index];
     unit.uv_index = uv_index;
 
-    for (size_t i = 0; i <= kHoursInUnit; ++i) {
+    int32_t biggest_weather_code = std::numeric_limits<int32_t>::min();
+    double temperature_summa = 0;
+    double felt_temperature_summa = 0;
+    double biggest_wind_speed = std::numeric_limits<double>::min();
+    double smallest_wind_speed = std::numeric_limits<double>::max();
+    double visibility_summa = 0;
+    double pressure_summa = 0;
+    double precipitation_summa = 0;
+    double humidity_summa = 0;
+
+    for (size_t i = 0; i < kHoursInUnit; ++i) {
       size_t element_index = start_index + unit_index * kHoursInUnit + i;
 
       if (element_index > end_index) {
         return false;
       }
 
-      weather_codes[i] = hourly_values_[kOpenMeteoNames.weather_code][element_index].get<int32_t>();
-      real_temperatures[i] = hourly_values_[kOpenMeteoNames.temperature][element_index].get<double>();
-      apparent_temperatures[i] = hourly_values_[kOpenMeteoNames.apparent_temperature][element_index].get<double>();
-      wind_speeds[i] = hourly_values_[kOpenMeteoNames.wind_speed][element_index].get<double>();
-      visibilities[i] = hourly_values_[kOpenMeteoNames.visibility][element_index].get<double>();
-      pressures[i] = hourly_values_[kOpenMeteoNames.pressure][element_index].get<double>();
-      precipitations[i] = hourly_values_[kOpenMeteoNames.precipitation][element_index].get<double>();
-      humidities[i] = hourly_values_[kOpenMeteoNames.humidity][element_index].get<int32_t>();
+      int32_t weather_code = 0;
+
+      if (!hourly_values_[kOpenMeteoNames.weather_code][element_index].is_null()) {
+        weather_code = hourly_values_[kOpenMeteoNames.weather_code][element_index].get<int32_t>();
+      }
+
+      biggest_weather_code = (weather_code > biggest_weather_code) ? weather_code : biggest_weather_code;
+
+      if (!hourly_values_[kOpenMeteoNames.temperature][element_index].is_null()) {
+        temperature_summa += hourly_values_[kOpenMeteoNames.temperature][element_index].get<double>();
+      }
+
+      if (!hourly_values_[kOpenMeteoNames.apparent_temperature][element_index].is_null()) {
+        felt_temperature_summa += hourly_values_[kOpenMeteoNames.apparent_temperature][element_index].get<double>();
+      }
+
+      double wind_speed = 0;
+
+      if (!hourly_values_[kOpenMeteoNames.wind_speed][element_index].is_null()) {
+        wind_speed= hourly_values_[kOpenMeteoNames.wind_speed][element_index].get<double>();
+      }
+
+      biggest_wind_speed = (wind_speed > biggest_wind_speed) ? wind_speed : biggest_wind_speed;
+      smallest_wind_speed = (wind_speed < smallest_wind_speed) ? wind_speed : smallest_wind_speed;
+
+      if (!hourly_values_[kOpenMeteoNames.visibility][element_index].is_null()) {
+        visibility_summa += hourly_values_[kOpenMeteoNames.visibility][element_index].get<double>();
+      }
+
+      if (!hourly_values_[kOpenMeteoNames.pressure][element_index].is_null()) {
+        pressure_summa += hourly_values_[kOpenMeteoNames.pressure][element_index].get<double>();
+      }
+
+      if (!hourly_values_[kOpenMeteoNames.precipitation][element_index].is_null()) {
+        precipitation_summa += hourly_values_[kOpenMeteoNames.precipitation][element_index].get<double>();
+      }
+
+      if (!hourly_values_[kOpenMeteoNames.humidity][element_index].is_null()) {
+        humidity_summa += hourly_values_[kOpenMeteoNames.humidity][element_index].get<int32_t>();
+      }
     }
 
-    std::sort(weather_codes.begin(), weather_codes.end());
-    std::sort(real_temperatures.begin(), real_temperatures.end());
-    std::sort(apparent_temperatures.begin(), apparent_temperatures.end());
-    std::sort(wind_speeds.begin(), wind_speeds.end());
-    std::sort(visibilities.begin(), visibilities.end());
-    std::sort(pressures.begin(), pressures.end());
-    std::sort(precipitations.begin(), precipitations.end());
-    std::sort(humidities.begin(), humidities.end());
-
-    unit.weather_type = GetMostCommon<int32_t>(weather_codes);
-    unit.real_temperature = static_cast<int32_t>(std::round(CountAverage<double>(real_temperatures)));
-    unit.felt_temperature = static_cast<int32_t>(std::round(CountAverage<double>(apparent_temperatures)));
-    unit.wind_speed_lower = static_cast<int32_t>(std::round(wind_speeds[0]));
-    unit.wind_speed_upper = static_cast<int32_t>(std::round(wind_speeds[kHoursInUnit - 1]));
-    unit.visibility = CountAverage<double>(visibilities) / 1000;
-    unit.pressure = CountAverage<double>(pressures);
-    unit.precipitation = CountAverage<double>(precipitations);
-    unit.humidity = static_cast<int32_t>(std::round(CountAverage<int32_t>(humidities)));
+    unit.weather_type = biggest_weather_code;
+    unit.real_temperature = static_cast<int32_t>(std::round(temperature_summa / kHoursInUnit));
+    unit.felt_temperature = static_cast<int32_t>(std::round(felt_temperature_summa / kHoursInUnit));
+    unit.wind_speed_upper = static_cast<int32_t>(std::round(biggest_wind_speed));
+    unit.wind_speed_lower = static_cast<int32_t>(std::round(smallest_wind_speed));
+    unit.visibility = visibility_summa / (kHoursInUnit * 1000);
+    unit.pressure = pressure_summa / kHoursInUnit;
+    unit.precipitation = precipitation_summa / kHoursInUnit;
+    unit.humidity = static_cast<int32_t>(std::round(humidity_summa / kHoursInUnit));
   }
 
   return true;
@@ -170,7 +194,7 @@ bool WeatherDay::SetJsonProperties(const json& forecast) {
 
     hourly_value = hourly[name];
 
-    if (!hourly_value.is_array() || hourly_value.size() != kHoursInDay * kDaysInForecast) {
+    if (!hourly_value.is_array() || hourly_value.size() < kHoursInDay * kDaysInForecast) {
       return false;
     }
   }
@@ -182,7 +206,7 @@ bool WeatherDay::SetJsonProperties(const json& forecast) {
 
     daily_value = daily[name];
 
-    if (!daily_value.is_array() || daily_value.size() != kDaysInForecast) {
+    if (!daily_value.is_array() || daily_value.size() < kDaysInForecast) {
       return false;
     }
   }

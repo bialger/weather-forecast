@@ -31,13 +31,15 @@ void ArgumentParser::DisplayError(const std::string& message, ErrorOutput error_
     return;
   }
 
-  if (&error_output.error_stream == &std::cout) {
+  bool is_console_output = &error_output.error_stream == &std::cout || &error_output.error_stream == &std::cerr;
+
+  if (is_console_output) {
     SetRedColor();
   }
 
   error_output.error_stream << message;
 
-  if (&error_output.error_stream == &std::cout) {
+  if (is_console_output) {
     ResetColor();
   }
 }

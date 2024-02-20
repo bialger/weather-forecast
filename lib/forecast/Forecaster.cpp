@@ -85,12 +85,10 @@ int32_t Forecaster::AddConfig(const std::string& str_config) {
   }
 
   if (days_count_ == kLowerLimitDaysCount) {
-    interval_ = defaults["days_count"].get<int32_t>();
+    days_count_ = defaults["days_count"].get<int32_t>();
   }
 
   size_t listed_locations_size = locations.size();
-  std::clamp(interval_, kLowerLimitIntervalSize + 1, kUpperLimitIntervalSize - 1);
-  std::clamp(days_count_, kLowerLimitDaysCount + 1, kUpperLimitDaysCount - 1);
   std::clamp(location_index_, 0, static_cast<int32_t>(listed_locations_size + locations_.size() - 1));
   is_valid_ = true;
 
@@ -141,7 +139,7 @@ int32_t Forecaster::AddDay() {
   ++days_count_;
 
   if (days_count_ == kUpperLimitDaysCount) {
-    days_count_ = kLowerLimitDaysCount + 1;
+    --days_count_;
   }
 
   return 0;
@@ -151,7 +149,7 @@ int32_t Forecaster::RemoveDay() {
   --days_count_;
 
   if (days_count_ == kLowerLimitDaysCount) {
-    days_count_ = kUpperLimitDaysCount - 1;
+    ++days_count_;
   }
 
   return 0;
@@ -228,7 +226,7 @@ int32_t Forecaster::RequestForecast() {
                                              {"hourly", hourly_list},
                                              {"daily", daily_list},
                                              {"timezone", "auto"},
-                                             {"forecast_days", std::to_string(WeatherDay::kDaysInForecast)}
+                                             {"forecast_days", "16"}
                                          });
 
   if (open_meteo_response.status_code != 200) {
@@ -258,11 +256,11 @@ int32_t Forecaster::ProcessPosition(const json& answer) {
 
 int32_t Forecaster::ProcessForecast(const json& answer) {
   for (int32_t day_number = 0; day_number < WeatherDay::kDaysInForecast; ++day_number) {
-    int32_t result = forecast_[day_number].SetForecast(answer, day_number);
+    bool result = forecast_[day_number].SetForecast(answer, day_number);
 
-    if (result != 0) {
+    if (!result) {
       DisplayError("Error while processing forecast.\n", error_output_);
-      return result;
+      return 1;
     }
   }
 
@@ -273,6 +271,8 @@ int32_t Forecaster::ProcessForecast(const json& answer) {
       letter = ' ';
     }
   }
+
+  current_weather_ = WeatherDay::GetCurrentWeather(answer);
 
   return 0;
 }
