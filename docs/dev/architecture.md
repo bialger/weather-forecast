@@ -97,7 +97,7 @@ classDiagram
     -ProcessForecast() int32_t
   }
   class JsonCache {
-    +string cache_group
+    -string cache_group
     -string cache_dir_
     +PutJsonToCache(string name, json data) void
     +GetJsonFromCache(string name) json
@@ -110,7 +110,6 @@ classDiagram
   }
   class WeatherTimeUnit {
     +map~string, string~ kChargeUnits$
-    +string name
     +string weather_type
     +int32_t real_temperature
     +int32-t felt_temperature
@@ -120,6 +119,7 @@ classDiagram
     +double precipitation
     +double uv_index
     +int32_t humidity
+    -string name
     +GetAllAsMap() map~string, string~
   }
   Forecaster *-- WeatherDay
