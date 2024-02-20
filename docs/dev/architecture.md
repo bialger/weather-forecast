@@ -122,6 +122,7 @@ classDiagram
     +int32_t humidity
     -string name_
     +GetAllAsMap() map~string, string~
+    +GetName() string
   }
   Forecaster *-- WeatherDay
   Forecaster *-- WeatherTimeUnit
