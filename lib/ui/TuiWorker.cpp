@@ -33,22 +33,20 @@ const std::map<int32_t, std::vector<std::string>> TuiWorker::kWeatherIcons = {
     {100, {"    .-.      ", "     __)     ", "    (        ", "     `-’     ", "      •      "}}
 };
 
-TuiWorker::TuiWorker(Forecaster& forecaster)
-    : forecaster_(forecaster), screen_(ftxui::ScreenInteractive::Fullscreen()) {
+TuiWorker::TuiWorker(Forecaster& forecaster, int32_t interval)
+    : forecaster_(forecaster),
+      screen_(ftxui::ScreenInteractive::Fullscreen()),
+      interval_(interval),
+      start_focus_(0),
+      result_(0) {
   RefreshElements();
-  result_ = 0;
-  start_focus_ = 0;
 }
 
 int32_t TuiWorker::Run() {
-  if (!forecaster_.IsValid()) {
-    return 1;
-  }
-
   std::thread([&] {
     while (true) {
-      std::this_thread::sleep_for(std::chrono::hours(forecaster_.GetSleepInterval()));
-      ReloadScreen(Action::kInterval);
+      std::this_thread::sleep_for(std::chrono::hours(interval_));
+      ReloadScreen(Action::kRefresh);
     }
   }).detach();
 
@@ -84,6 +82,10 @@ bool TuiWorker::HandleEvent(ftxui::Event event) {
       || event == ftxui::Event::ArrowLeft) {
     std::thread([&]() -> void {
       result_ = ReloadScreen(Action::kPrev);
+    }).detach();
+  } else if (event == ftxui::Event::Character('r') || event == ftxui::Event::F5) {
+    std::thread([&]() -> void {
+      result_ = ReloadScreen(Action::kRefresh);
     }).detach();
   } else if (event == ftxui::Event::Character('q') || event == ftxui::Event::Escape) {
     screen_.Exit();
@@ -126,7 +128,7 @@ int32_t TuiWorker::ReloadScreen(Action action) {
       FocusPrev();
       break;
     }
-    case Action::kInterval: {
+    case Action::kRefresh: {
       result = forecaster_.ObtainForecast();
 
       if (result != 0) {
@@ -151,10 +153,6 @@ int32_t TuiWorker::ReloadScreen(Action action) {
         return result;
       }
 
-      break;
-    }
-    default: {
-      result = 0;
       break;
     }
   }
@@ -196,7 +194,6 @@ void TuiWorker::FocusPrev() {
 ftxui::Element TuiWorker::GetWeatherIcon(int32_t weather_code) {
   ftxui::Elements icon;
   icon.reserve(5);
-  std::map<int32_t, std::vector<std::string>> mapa = kWeatherIcons;
 
   for (auto& line : kWeatherIcons.at(weather_code)) {
     icon.push_back(ftxui::text(line));

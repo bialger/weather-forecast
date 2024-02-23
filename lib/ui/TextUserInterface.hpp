@@ -6,6 +6,8 @@
 #include <string>
 #include <cstdint>
 
+#include "ConfigParser.hpp"
+
 #include "lib/utils/utils.hpp"
 #include "lib/argparser/ArgParser.hpp"
 #include "lib/forecast/Forecaster.hpp"
@@ -29,11 +31,11 @@ class TextUserInterface {
   std::ostream& out_;
   std::istream& in_;
   ErrorOutput error_output_;
-  std::ostringstream background_err_{};
+  std::ostringstream background_output_{};
   ArgumentParser::ArgParser parser_;
   CompositeString config_path_;
 
-  int32_t BeginForecast();
+  int32_t BeginForecast(const ConfigParser& config);
 };
 
 #endif //TEXTUSERINTERFACE_HPP_

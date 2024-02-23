@@ -3,6 +3,8 @@ add_library(ui STATIC
         TextUserInterface.hpp
         TuiWorker.cpp
         TuiWorker.hpp
+        ConfigParser.cpp
+        ConfigParser.hpp
 )
 
 target_link_libraries(ui PUBLIC

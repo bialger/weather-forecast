@@ -4,101 +4,19 @@
 
 #include <cpr/cpr.h>
 
-const std::string Forecaster::kDefaultLocation = "First location in config";
-Forecaster::Forecaster(int32_t interval,
-                       int32_t days_count,
-                       const std::string& location,
+Forecaster::Forecaster(int32_t days_count,
+                       int32_t location_index,
+                       const std::vector<std::string>& locations,
+                       const std::string& api_key,
                        const std::string& config_dir,
-                       const std::string& str_config,
-                       int32_t& result,
                        ErrorOutput error_output) : geocoder_cache_("geocoder", config_dir),
-                                                   config_dir_(config_dir),
+                                                   days_count_(days_count),
+                                                   location_index_(location_index),
+                                                   locations_(locations),
+                                                   api_key_(api_key),
                                                    error_output_(error_output),
                                                    current_weather_("Now") {
-  interval_ = interval;
-  days_count_ = days_count;
-  location_index_ = 0;
   forecast_ = std::vector<WeatherDay>(WeatherDay::kDaysInForecast);
-
-  if (location != kDefaultLocation) {
-    locations_.push_back(location);
-  }
-
-  is_valid_ = false;
-  result = AddConfig(str_config);
-}
-
-bool Forecaster::IsValidConfig(const std::string& str_config) {
-  json config = json::parse(str_config);
-
-  if (!config.is_object() || !config.contains("api_key_file") || !config.contains("locations")
-      || !config.contains("defaults")) {
-    return false;
-  }
-
-  json api_key_file = config["api_key_file"];
-  json locations = config["locations"];
-  json defaults = config["defaults"];
-
-  if (!api_key_file.is_string() || !locations.is_array() || !defaults.is_object()) {
-    return false;
-  }
-
-  if (!defaults.contains("interval") || !defaults.contains("days_count") || !defaults.contains("location_index")) {
-    return false;
-  }
-
-  return true;
-}
-
-int32_t Forecaster::AddConfig(const std::string& str_config) {
-  if (!IsValidConfig(str_config)) {
-    DisplayError("Invalid config!\n", error_output_);
-    return 1;
-  }
-
-  json config = json::parse(str_config);
-  json api_key_file = config["api_key_file"];
-  json locations = config["locations"];
-  json defaults = config["defaults"];
-
-  std::string api_key_path = config_dir_ + "/" + api_key_file.get<std::string>();
-
-  if (!IsRegularFile(api_key_path)) {
-    DisplayError("API key file " + api_key_path + " does not exist!\n", error_output_);
-    return 1;
-  }
-
-  int32_t result = geocoder_.SetApiKey(api_key_path);
-
-  if (result != 0) {
-    DisplayError("Invalid API key!\n", error_output_);
-    return result;
-  }
-
-  if (locations_.empty()) {
-    location_index_ = defaults["location_index"].get<int32_t>();
-  }
-
-  if (interval_ == kLowerLimitIntervalSize) {
-    interval_ = defaults["interval"].get<int32_t>();
-  }
-
-  if (days_count_ == kLowerLimitDaysCount) {
-    days_count_ = defaults["days_count"].get<int32_t>();
-  }
-
-  size_t listed_locations_size = locations.size();
-  interval_ = std::clamp(interval_, kLowerLimitIntervalSize + 1, kUpperLimitIntervalSize - 1);
-  days_count_ = std::clamp(days_count_, kLowerLimitDaysCount + 1, kUpperLimitDaysCount - 1);
-  location_index_ = std::clamp(location_index_, 0, static_cast<int32_t>(listed_locations_size + locations_.size() - 1));
-  is_valid_ = true;
-
-  for (size_t i = 0; i < listed_locations_size; ++i) {
-    locations_.push_back(locations[i].get<std::string>());
-  }
-
-  return 0;
 }
 
 int32_t Forecaster::ObtainForecast() {
@@ -173,14 +91,6 @@ std::string Forecaster::GetLastForecastTime() const {
   return last_time_;
 }
 
-int32_t Forecaster::GetSleepInterval() const {
-  return interval_;
-}
-
-bool Forecaster::IsValid() const {
-  return is_valid_;
-}
-
 int32_t Forecaster::RequestPosition() {
   json answer = geocoder_cache_.GetJsonFromCache(locations_[location_index_]);
 
@@ -188,21 +98,28 @@ int32_t Forecaster::RequestPosition() {
     return ProcessPosition(answer);
   }
 
-  cpr::Response city_response = cpr::Get(cpr::Url(Geocoder::kGeocoderUrl),
-                                         cpr::Parameters{
-                                             {"geocode", locations_[location_index_]},
-                                             {"apikey", geocoder_.GetApiKey()},
-                                             {"format", "json"}
-                                         });
+  cpr::Response yandex_geocoder_response = cpr::Get(cpr::Url(Geocoder::kGeocoderUrl),
+                                                    cpr::Parameters{
+                                                        {"geocode", locations_[location_index_]},
+                                                        {"apikey", api_key_},
+                                                        {"format", "json"}
+                                                    });
 
-  if (city_response.status_code != 200) {
-    DisplayError(
-        "Invalid response! Make sure that you entered valid Yandex Geocoder API key and it did not reach the limit.\n",
-        error_output_);
-    return static_cast<int32_t>(city_response.status_code);
+  if (yandex_geocoder_response.status_code != 200) {
+    std::string error_message = "Invalid response! ";
+    if (answer.contains("reason") && answer["message"].is_string()) {
+      error_message += "Yandex Geocoder sent an error. \nError description: " + answer["message"].get<std::string>();
+    } else if (yandex_geocoder_response.status_code == 0) {
+      error_message += "Yandex Geocoder did not respond. Make sure that you have access to the Internet.";
+    } else {
+      error_message += "Yandex Geocoder sent an unknown error.";
+    }
+
+    DisplayError(error_message + "\n", error_output_);
+    return static_cast<int32_t>(yandex_geocoder_response.status_code);
   }
 
-  answer = json::parse(city_response.text);
+  answer = json::parse(yandex_geocoder_response.text);
 
   return ProcessPosition(answer);
 }
@@ -221,25 +138,31 @@ int32_t Forecaster::RequestForecast() {
   std::string daily_list = WeatherDay::kOpenMeteoNames.uv_index;
 
   cpr::Response open_meteo_response = cpr::Get(cpr::Url(WeatherDay::kWeatherUrl),
-                                         cpr::Parameters{
-                                             {"latitude", geocoder_.GetLatitude()},
-                                             {"longitude", geocoder_.GetLongitude()},
-                                             {"current", current_list},
-                                             {"hourly", hourly_list},
-                                             {"daily", daily_list},
-                                             {"timezone", "auto"},
-                                             {"forecast_days", "16"}
-                                         });
-
-  if (open_meteo_response.status_code != 200) {
-    DisplayError(
-        "Invalid response! Make sure that you entered valid Yandex Geocoder API key and it did not reach the limit.\n",
-        error_output_);
-    return static_cast<int32_t>(open_meteo_response.status_code);
-  }
+                                               cpr::Parameters{
+                                                   {"latitude", geocoder_.GetLatitude()},
+                                                   {"longitude", geocoder_.GetLongitude()},
+                                                   {"current", current_list},
+                                                   {"hourly", hourly_list},
+                                                   {"daily", daily_list},
+                                                   {"timezone", "auto"},
+                                                   {"forecast_days", "16"}
+                                               });
 
   answer = json::parse(open_meteo_response.text);
 
+  if (open_meteo_response.status_code != 200) {
+    std::string error_message = "Invalid response! ";
+    if (answer.contains("reason") && answer["reason"].is_string()) {
+      error_message += "OpenMeteo sent an error.\nError description: " + answer["reason"].get<std::string>();
+    } else if (open_meteo_response.status_code == 0) {
+      error_message += "OpenMeteo did not respond. Make sure that you have access to the Internet.";
+    } else {
+      error_message += "OpenMeteo sent an unknown error.";
+    }
+
+    DisplayError(error_message + "\n", error_output_);
+    return static_cast<int32_t>(open_meteo_response.status_code);
+  }
   return ProcessForecast(answer);
 }
 

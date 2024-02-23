@@ -8,7 +8,7 @@
 enum class Action {
   kNext,
   kPrev,
-  kInterval,
+  kRefresh,
   kAddLine,
   kRemoveLine,
   kNextLine,
@@ -19,7 +19,7 @@ class TuiWorker {
  public:
   static const std::map<int32_t, std::vector<std::string>> kWeatherIcons;
 
-  explicit TuiWorker(Forecaster& forecaster);
+  explicit TuiWorker(Forecaster& forecaster, int32_t interval);
 
   int32_t Run();
 
@@ -28,6 +28,7 @@ class TuiWorker {
   static const int32_t kMaxHeight = 12;
   static const int32_t kFocusLen = 3;
   Forecaster& forecaster_;
+  int32_t interval_;
   std::vector<ftxui::Element> elements_;
   ftxui::ScreenInteractive screen_;
   size_t start_focus_;

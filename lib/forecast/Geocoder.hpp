@@ -12,16 +12,13 @@ class Geocoder {
   Geocoder() = default;
 
   int32_t SetCoordinates(const json& geocode);
-  int32_t SetApiKey(const std::string& api_key_path);
 
   [[nodiscard]] std::string GetLatitude() const;
   [[nodiscard]] std::string GetLongitude() const;
-  [[nodiscard]] std::string GetApiKey() const;
 
  private:
   std::string latitude_;
   std::string longitude_;
-  std::string api_key_;
 };
 
 #endif //GEOCODER_HPP_

@@ -2,15 +2,16 @@
 #include <iterator>
 #include <functional>
 
-#include "TuiWorker.hpp"
 #include "TextUserInterface.hpp"
+#include "TuiWorker.hpp"
+#include "ConfigParser.hpp"
 
 const std::string TextUserInterface::kProgramName = "weather-forecast";
 const CompositeString TextUserInterface::kDefaultConfigPath = "default_config.json";
 const std::string TextUserInterface::kIntervalDescription =
     "Initial time between weather forecast updates in hours. Should be more than "
-        + std::to_string(Forecaster::kLowerLimitIntervalSize) + " and less than "
-        + std::to_string(Forecaster::kUpperLimitIntervalSize)
+        + std::to_string(ConfigParser::kLowerLimitIntervalSize) + " and less than "
+        + std::to_string(ConfigParser::kUpperLimitIntervalSize)
         + ". The default value means using the parameter from the configuration file.";
 const std::string TextUserInterface::kDaysCountDescription =
     "Initial number of days for which the forecast is shown. Should be more than "
@@ -24,7 +25,7 @@ TextUserInterface::TextUserInterface(std::ostream& out, std::ostream& err, std::
 
   std::function<bool(std::string&)> IsGoodIntervalLength = [&](std::string& str_size) -> bool {
     int32_t block_size = std::stoi(str_size);
-    return block_size > Forecaster::kLowerLimitIntervalSize && block_size < Forecaster::kUpperLimitIntervalSize;
+    return block_size > ConfigParser::kLowerLimitIntervalSize && block_size < ConfigParser::kUpperLimitIntervalSize;
   };
 
   std::function<bool(std::string&)> IsGoodDaysCount = [&](std::string& str_count) -> bool {
@@ -35,11 +36,11 @@ TextUserInterface::TextUserInterface(std::ostream& out, std::ostream& err, std::
   parser_.AddCompositeArgument('c', "config", "Path to the configuration file").Default(kDefaultConfigPath)
       .StoreValue(config_path_).AddValidate(&IsValidFilename).AddIsGood(&IsRegularFile);
   parser_.AddStringArgument('l', "location", "Name of the location for which the forecast is requested")
-      .Default(Forecaster::kDefaultLocation);
+      .Default(ConfigParser::kDefaultLocation);
   parser_.AddIntArgument('i',
                          "interval",
                          kIntervalDescription.c_str())
-      .Default(Forecaster::kLowerLimitIntervalSize).AddIsGood(IsGoodIntervalLength);
+      .Default(ConfigParser::kLowerLimitIntervalSize).AddIsGood(IsGoodIntervalLength);
   parser_.AddIntArgument('d',
                          "days-count",
                          kDaysCountDescription.c_str())
@@ -75,47 +76,51 @@ int32_t TextUserInterface::Start(const std::vector<std::string>& args) {
     return 1;
   }
 
-  int32_t result = BeginForecast();
-  DisplayError(background_err_.str(), error_output_);
+  ConfigParser config(parser_.GetIntValue("interval"),
+                      parser_.GetIntValue("days-count"),
+                      parser_.GetStringValue("location"),
+                      config_path_,
+                      error_output_);
+
+  int32_t result = config.ParseConfig();
+
+  if (result != 0) {
+    return result;
+  }
+
+  result = BeginForecast(config);
+
+  if (result != 0) {
+    DisplayError(background_output_.str(), error_output_);
+  } else {
+    out_ << background_output_.str();
+  }
 
   return result;
 }
 
-int32_t TextUserInterface::BeginForecast() {
-  std::string config_contents = GetStringFromFile(config_path_);
-  std::string config_dir =
-      std::filesystem::absolute(std::filesystem::path(config_path_.c_str())).parent_path().string();
-  ErrorOutput background_output{background_err_, true};
-  int32_t result = 0;
+int32_t TextUserInterface::BeginForecast(const ConfigParser& config) {
+  ErrorOutput background_output{background_output_, true};
+
   Forecaster forecaster(
-      parser_.GetIntValue("interval"),
-      parser_.GetIntValue("days-count"),
-      parser_.GetStringValue("location"),
-      config_dir,
-      config_contents,
-      result,
+      config.GetDaysCount(),
+      config.GetLocationIndex(),
+      config.GetLocations(),
+      config.GetApiKey(),
+      config.GetConfigDir(),
       background_output
   );
 
-  if (result != 0) {
-    return result;
-  }
-
-  result = forecaster.ObtainForecast();
+  int32_t result = forecaster.ObtainForecast();
 
   if (result != 0) {
     return result;
   }
 
-  TuiWorker worker(forecaster);
-
+  TuiWorker worker(forecaster, config.GetInterval());
   result = worker.Run();
 
-  if (result != 0) {
-    return result;
-  }
-
-  return 0;
+  return result;
 }
 
 std::vector<std::string> TextUserInterface::GetPotentialConfigDirectories() {

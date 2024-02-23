@@ -76,7 +76,7 @@ classDiagram
     -ostream& out_
     -istream& in_
     -ErrorOutput error_output_
-    -ostringstream background_err_
+    -ostringstream background_output_
     -ArgParser parser_
     -CompositeString config_path_
     +GetPotentialConfigDirectories()$ vector~string~
@@ -110,7 +110,7 @@ classDiagram
     <<enumeration>>
     kNext,
     kPrev,
-    kInterval,
+    kRefresh,
     kAddLine,
     kRemoveLine,
     kNextLine,
@@ -181,7 +181,7 @@ classDiagram
     +GetLastForecastTime() string
     +GetSleepInterval() int
     +IsValid() bool
-    -AddConfig(string str_config) int
+    -ParseConfig(string str_config) int
     -RequestPosition() int
     -RequestForecast() int
     -ProcessPosition(json answer) int
