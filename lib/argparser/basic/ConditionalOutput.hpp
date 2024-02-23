@@ -5,9 +5,9 @@
 
 /**\n Structure for error output in ArgumentParser */
 
-struct ErrorOutput {
-  std::ostream& error_stream = std::cout;
-  bool print_errors = false;
+struct ConditionalOutput {
+  std::ostream& out_stream = std::cout;
+  bool print_messages = false;
 };
 
 #endif //ERROROUTPUT_HPP_

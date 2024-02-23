@@ -9,7 +9,7 @@
 #include <numeric>
 #include <map>
 
-#include "ErrorOutput.hpp"
+#include "ConditionalOutput.hpp"
 
 #if defined _WIN32 || defined _WIN64 || defined __CYGWIN__
 #ifndef NOMINMAX
@@ -36,7 +36,7 @@ void ResetColor();
 
 /**\n This function prints a error message. */
 
-void DisplayError(const std::string& message, ErrorOutput error_output);
+void DisplayError(const std::string& message, ConditionalOutput error_output);
 
 /**\n This function sets the output to UTF-8 on Windows. */
 
@@ -89,20 +89,23 @@ U CountAverage(const std::vector<T>& values) {
 /**\n This function returns the most common value in std::vector of an arithmetic type */
 
 template<class InputIt, class T = typename std::iterator_traits<InputIt>::value_type>
-T MostCommon(InputIt begin, InputIt end)
-{
+T MostCommon(InputIt begin, InputIt end) {
   std::map<T, int> counts;
+
   for (InputIt it = begin; it != end; ++it) {
     if (counts.find(*it) != counts.end()) {
       ++counts[*it];
-    }
-    else {
+    } else {
       counts[*it] = 1;
     }
   }
+
   return std::max_element(counts.begin(), counts.end(),
-                          [] (const std::pair<T, int>& pair1, const std::pair<T, int>& pair2) {
-                            return pair1.second < pair2.second;})->first;
+                          [](const std::pair<T, int>& pair1, const std::pair<T, int>& pair2) {
+                            return pair1.second < pair2.second;
+                          })->first;
 }
+
+inline ConditionalOutput& operator<<(ConditionalOutput& output, const std::string& message);
 
 #endif //UTILS_HPP_

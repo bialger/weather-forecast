@@ -17,7 +17,7 @@ class Forecaster {
              const std::vector<std::string>& locations,
              const std::string& api_key,
              const std::string& config_dir,
-             ErrorOutput error_output);
+             ConditionalOutput error_output);
 
   int32_t ObtainForecast();
   int32_t SwapToNext();
@@ -40,7 +40,7 @@ class Forecaster {
   std::vector<WeatherDay> forecast_{};
   WeatherTimeUnit current_weather_;
   JsonCache geocoder_cache_;
-  ErrorOutput error_output_;
+  ConditionalOutput error_output_;
 
   int32_t RequestPosition();
   int32_t RequestForecast();

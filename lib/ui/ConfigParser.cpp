@@ -12,7 +12,7 @@ ConfigParser::ConfigParser(int32_t interval,
                            int32_t days_count,
                            const std::string& location,
                            const std::string& config_path,
-                           ErrorOutput error_output) : error_output_(error_output) {
+                           ConditionalOutput error_output) : error_output_(error_output) {
   interval_ = interval;
   days_count_ = days_count;
   config_path_ = config_path;

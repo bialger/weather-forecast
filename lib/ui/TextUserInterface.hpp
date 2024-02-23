@@ -30,7 +30,7 @@ class TextUserInterface {
 
   std::ostream& out_;
   std::istream& in_;
-  ErrorOutput error_output_;
+  ConditionalOutput error_output_;
   std::ostringstream background_output_{};
   ArgumentParser::ArgParser parser_;
   CompositeString config_path_;

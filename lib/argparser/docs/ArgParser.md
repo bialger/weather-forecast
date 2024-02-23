@@ -44,21 +44,20 @@ ArgParser& operator=(const ArgParser& other) = delete;
 ### Parse
 Функция парсинга. Вызывает приватный метод Parse_, который выполняет парсинг 
 аргументов командной строки, переданных в виде `std::vector` из `std::string`
-(параметр *args*). Принимает `bool` параметр *print_errors*(по умолчанию `false`), 
-при истинности которого при обнаружении ошибок синтаксиса переданных аргументов 
-командной строки ошибки выводятся. Возвращает `true` при успешном завершении парсинга, 
+(параметр *args*). Принимает `ConditionalOutput` параметр error_output, по умолчанию 
+не выводящий ошибки. Возвращает `true` при успешном завершении парсинга, 
 и `false` в случае его провала.
 
 Синтаксис аргументов частично POSIX-совместимый (поддерживается передача значений 
 через "=" или пробел после ключа, коротки и длинные ключи, комбинация коротких 
 ключей, остановка парсинга по аргументу "--", получение множества значений в аргумент).
 ```cpp
-bool Parse(const std::vector<std::string>& args, bool print_errors = false);
+bool Parse(const std::vector<std::string>& args, ConditionalOutput error_output = {std::cout, false});
 ```
 Перегрузка Parse с тем же функционалом, но принимающая *C-style array* из 
 *C-style string* длиной *argc* вместо `std::vector` из `std::string`.
 ```cpp
-bool Parse(int argc, char** argv, bool print_errors = false);
+bool Parse(int argc, char** argv, ConditionalOutput error_output = {std::cout, false});
 ```
 
 ### Help

@@ -23,7 +23,7 @@ class ConfigParser {
                int32_t days_count,
                const std::string& location,
                const std::string& config_path,
-               ErrorOutput error_output);
+               ConditionalOutput error_output);
 
   static bool IsValidConfig(const std::string& str_config);
   int32_t ParseConfig();
@@ -39,7 +39,7 @@ class ConfigParser {
   int32_t interval_;
   int32_t days_count_;
   int32_t location_index_;
-  ErrorOutput error_output_;
+  ConditionalOutput error_output_;
   std::string config_dir_;
   std::vector<std::string> locations_{};
   std::string api_key_;

@@ -100,7 +100,7 @@ int32_t TextUserInterface::Start(const std::vector<std::string>& args) {
 }
 
 int32_t TextUserInterface::BeginForecast(const ConfigParser& config) {
-  ErrorOutput background_output{background_output_, true};
+  ConditionalOutput background_output{background_output_, true};
 
   Forecaster forecaster(
       config.GetDaysCount(),

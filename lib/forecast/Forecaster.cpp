@@ -9,13 +9,13 @@ Forecaster::Forecaster(int32_t days_count,
                        const std::vector<std::string>& locations,
                        const std::string& api_key,
                        const std::string& config_dir,
-                       ErrorOutput error_output) : geocoder_cache_("geocoder", config_dir),
-                                                   days_count_(days_count),
-                                                   location_index_(location_index),
-                                                   locations_(locations),
-                                                   api_key_(api_key),
-                                                   error_output_(error_output),
-                                                   current_weather_("Now") {
+                       ConditionalOutput error_output) : geocoder_cache_("geocoder", config_dir),
+                                                         days_count_(days_count),
+                                                         location_index_(location_index),
+                                                         locations_(locations),
+                                                         api_key_(api_key),
+                                                         error_output_(error_output),
+                                                         current_weather_("Now") {
   forecast_ = std::vector<WeatherDay>(WeatherDay::kDaysInForecast);
 }
 

@@ -48,8 +48,8 @@ classDiagram
         -map~string, map~ string, size_t~~ arguments_by_type_;
         -map~char, string~ short_to_long_names_;
         -size_t help_index_;
-        +Parse(vector~string~ args, ErrorOutput error_output=()) bool
-        +Parse(int argc, char[][] argv, ErrorOutput error_output=()) bool
+        +Parse(vector~string~ args, ConditionalOutput error_output=()) bool
+        +Parse(int argc, char[][] argv, ConditionalOutput error_output=()) bool
         +Help() bool
         +HelpDescription() string
         +AddHelp(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~bool~ &
@@ -57,10 +57,10 @@ classDiagram
         +AddArgument~T~(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
         +AddArgument~T~(const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
         +GetValue~T~(const char[] long_name, size_t index=0) T
-        -Parse_(vector~string~ args, ErrorOutput error_output) bool
+        -Parse_(vector~string~ args, ConditionalOutput error_output) bool
         -GetLongKeys(string current_argument) vector~string~
         -ParsePositionalArguments(vector~string~ argv, const vector~size_t~ & used_positions) void
-        -HandleErrors(ErrorOutput error_output) bool
+        -HandleErrors(ConditionalOutput error_output) bool
         -RefreshArguments() void
         -AddArgument_~T~(char short_name, const char[] long_name, const char[] description) ConcreteArgumentBuilder~T~ &
         -GetValue_~T~(const char* long_name, size_t index) T

@@ -34,11 +34,11 @@ ArgumentParser::ArgParser::~ArgParser() {
   }
 }
 
-bool ArgumentParser::ArgParser::Parse(const std::vector<std::string>& args, ErrorOutput error_output) {
+bool ArgumentParser::ArgParser::Parse(const std::vector<std::string>& args, ConditionalOutput error_output) {
   return Parse_(args, error_output);
 }
 
-bool ArgumentParser::ArgParser::Parse(int argc, char** argv, ErrorOutput error_output) {
+bool ArgumentParser::ArgParser::Parse(int argc, char** argv, ConditionalOutput error_output) {
   std::vector<std::string> args = std::vector<std::string>(argv, argv + argc);
 
   return Parse_(args, error_output);
@@ -144,7 +144,7 @@ ArgumentParser::ConcreteArgumentBuilder<bool>& ArgumentParser::ArgParser::AddHel
   return AddHelp(kBadChar, long_name, description);
 }
 
-bool ArgumentParser::ArgParser::Parse_(const std::vector<std::string>& args, ErrorOutput error_output) {
+bool ArgumentParser::ArgParser::Parse_(const std::vector<std::string>& args, ConditionalOutput error_output) {
   RefreshArguments();
   std::vector<size_t> used_positions = {0};
   std::vector<std::string> argv = args;
@@ -270,7 +270,7 @@ void ArgumentParser::ArgParser::RefreshArguments() {
   }
 }
 
-bool ArgumentParser::ArgParser::HandleErrors(ErrorOutput error_output) {
+bool ArgumentParser::ArgParser::HandleErrors(ConditionalOutput error_output) {
   std::string error_string;
   bool is_correct = true;
 
