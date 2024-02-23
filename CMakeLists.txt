@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(
         weather-forecast
-        VERSION 0.9
+        VERSION 1.0
         DESCRIPTION "Console weather forecast app"
         LANGUAGES CXX
 )
