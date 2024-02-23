@@ -70,7 +70,8 @@ WeatherTimeUnit WeatherDay::GetCurrentWeather(const json& forecast) {
 
   time_unit.weather_type = current[kOpenMeteoNames.weather_code].get<int32_t>();
   time_unit.real_temperature = static_cast<int32_t>(std::round(current[kOpenMeteoNames.temperature].get<double>()));
-  time_unit.felt_temperature = static_cast<int32_t>(std::round(current[kOpenMeteoNames.apparent_temperature].get<double>()));
+  time_unit.felt_temperature =
+      static_cast<int32_t>(std::round(current[kOpenMeteoNames.apparent_temperature].get<double>()));
   time_unit.wind_speed_lower = static_cast<int32_t>(std::round(current[kOpenMeteoNames.wind_speed].get<double>()));
   time_unit.wind_speed_upper = time_unit.wind_speed_lower;
   time_unit.visibility = hourly[kOpenMeteoNames.visibility][hour].get<double>() / 1000;
@@ -134,7 +135,7 @@ bool WeatherDay::SetForecast(const json& forecast, int32_t day_number) {
       double wind_speed = 0;
 
       if (!hourly_values_[kOpenMeteoNames.wind_speed][element_index].is_null()) {
-        wind_speed= hourly_values_[kOpenMeteoNames.wind_speed][element_index].get<double>();
+        wind_speed = hourly_values_[kOpenMeteoNames.wind_speed][element_index].get<double>();
       }
 
       biggest_wind_speed = (wind_speed > biggest_wind_speed) ? wind_speed : biggest_wind_speed;

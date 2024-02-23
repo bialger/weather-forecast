@@ -16,6 +16,7 @@ class JsonCache {
 
   void PutJsonToCache(const std::string& cache_name, const json& data);
   json GetJsonFromCache(const std::string& cache_name);
+
  private:
   std::string cache_group_;
   std::string cache_dir_;
