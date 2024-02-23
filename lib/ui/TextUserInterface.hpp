@@ -31,7 +31,8 @@ class TextUserInterface {
   std::ostream& out_;
   std::istream& in_;
   ConditionalOutput error_output_;
-  std::ostringstream background_output_{};
+  std::ostringstream background_errors_{};
+  std::ostringstream background_logs_{};
   ArgumentParser::ArgParser parser_;
   CompositeString config_path_;
 

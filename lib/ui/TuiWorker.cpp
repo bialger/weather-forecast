@@ -35,6 +35,8 @@ const std::map<int32_t, std::vector<std::string>> TuiWorker::kWeatherIcons = {
 
 TuiWorker::TuiWorker(Forecaster& forecaster, int32_t interval)
     : forecaster_(forecaster),
+      error_output_(forecaster.GetErrorOutput()),
+      log_output_(forecaster.GetLogOutput()),
       screen_(ftxui::ScreenInteractive::Fullscreen()),
       interval_(interval),
       start_focus_(0),

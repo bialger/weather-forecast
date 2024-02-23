@@ -90,17 +90,18 @@ int32_t TextUserInterface::Start(const std::vector<std::string>& args) {
 
   result = BeginForecast(config);
 
+  out_ << background_logs_.str();
+
   if (result != 0) {
-    DisplayError(background_output_.str(), error_output_);
-  } else {
-    out_ << background_output_.str();
+    DisplayError(background_errors_.str(), error_output_);
   }
 
   return result;
 }
 
 int32_t TextUserInterface::BeginForecast(const ConfigParser& config) {
-  ConditionalOutput background_output{background_output_, true};
+  ConditionalOutput background_errors{background_errors_, true};
+  ConditionalOutput background_logs{background_logs_, true};
 
   Forecaster forecaster(
       config.GetDaysCount(),
@@ -108,7 +109,8 @@ int32_t TextUserInterface::BeginForecast(const ConfigParser& config) {
       config.GetLocations(),
       config.GetApiKey(),
       config.GetConfigDir(),
-      background_output
+      background_errors,
+      background_logs
   );
 
   int32_t result = forecaster.ObtainForecast();

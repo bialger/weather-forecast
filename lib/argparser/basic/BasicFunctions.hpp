@@ -53,8 +53,6 @@ bool IsRegularFile(std::string& filename);
 
 bool IsDirectory(std::string& dirname);
 
-inline ConditionalOutput& operator<<(ConditionalOutput& output, const std::string& message);
-
 }
 
 #endif //ARGPARSER_BASICFUNCTIONS_HPP_

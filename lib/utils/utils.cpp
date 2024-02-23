@@ -142,14 +142,6 @@ std::vector<std::string> Split(const std::string& str) {
   return {std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>()};
 }
 
-ConditionalOutput& operator<<(ConditionalOutput& output, const std::string& message) {
-  if (output.print_messages) {
-    output.out_stream << message;
-  }
-
-  return output;
-}
-
 /* The code provides dummy function definitions for Windows console-related
  * functions when the code is being compiled in a non-Windows environment.
  * This ensures that the code can compile and run without errors in such

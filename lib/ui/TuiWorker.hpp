@@ -28,6 +28,8 @@ class TuiWorker {
   static const int32_t kMaxHeight = 12;
   static const int32_t kFocusLen = 3;
   Forecaster& forecaster_;
+  ConditionalOutput error_output_;
+  ConditionalOutput log_output_;
   int32_t interval_;
   std::vector<ftxui::Element> elements_;
   ftxui::ScreenInteractive screen_;

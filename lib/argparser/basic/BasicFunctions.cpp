@@ -97,14 +97,6 @@ bool ArgumentParser::IsDirectory(std::string& dirname) {
   return std::filesystem::is_directory(path);
 }
 
-ConditionalOutput& operator<<(ConditionalOutput& output, const std::string& message) {
-  if (output.print_messages) {
-    output.out_stream << message;
-  }
-
-  return output;
-}
-
 /* The code provides dummy function definitions for Windows console-related
  * functions when the code is being compiled in a non-Windows environment.
  * This ensures that the code can compile and run without errors in such

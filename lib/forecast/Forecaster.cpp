@@ -9,12 +9,14 @@ Forecaster::Forecaster(int32_t days_count,
                        const std::vector<std::string>& locations,
                        const std::string& api_key,
                        const std::string& config_dir,
-                       ConditionalOutput error_output) : geocoder_cache_("geocoder", config_dir),
+                       ConditionalOutput error_output,
+                       ConditionalOutput log_output) : geocoder_cache_("geocoder", config_dir),
                                                          days_count_(days_count),
                                                          location_index_(location_index),
                                                          locations_(locations),
                                                          api_key_(api_key),
                                                          error_output_(error_output),
+                                                         log_output_(log_output),
                                                          current_weather_("Now") {
   forecast_ = std::vector<WeatherDay>(WeatherDay::kDaysInForecast);
 }
@@ -89,6 +91,14 @@ std::string Forecaster::GetLocation() const {
 
 std::string Forecaster::GetLastForecastTime() const {
   return last_time_;
+}
+
+ConditionalOutput Forecaster::GetErrorOutput() const {
+  return error_output_;
+}
+
+ConditionalOutput Forecaster::GetLogOutput() const {
+  return log_output_;
 }
 
 int32_t Forecaster::RequestPosition() {

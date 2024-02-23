@@ -106,6 +106,4 @@ T MostCommon(InputIt begin, InputIt end) {
                           })->first;
 }
 
-inline ConditionalOutput& operator<<(ConditionalOutput& output, const std::string& message);
-
 #endif //UTILS_HPP_

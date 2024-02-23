@@ -76,7 +76,7 @@ classDiagram
     -ostream& out_
     -istream& in_
     -ErrorOutput error_output_
-    -ostringstream background_output_
+    -ostringstream background_errors_
     -ArgParser parser_
     -CompositeString config_path_
     +GetPotentialConfigDirectories()$ vector~string~
