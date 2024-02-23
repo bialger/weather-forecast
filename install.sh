@@ -7,12 +7,14 @@ CMAKE_PROJECT_DIR="$CMAKE_BUILD_DIR/$PROJECT_NAME"
 LOCAL_CONFIG_DIR="./.config"
 CONFIG_DIR="$HOME/.config/$PROJECT_NAME"
 
-if [ -e "$CMAKE_PROJECT_DIR" ]; then
-  rm -rf "$CMAKE_PROJECT_DIR"
-fi
+if [ "x$SAVE_PREV" = "x" ]; then
+  if [ -e "$CMAKE_PROJECT_DIR" ]; then
+    rm -rf "$CMAKE_PROJECT_DIR"
+  fi
 
-if [ -e "$CONFIG_DIR" ]; then
-  rm -rf "$CONFIG_DIR"
+  if [ -e "$CONFIG_DIR" ]; then
+    rm -rf "$CONFIG_DIR"
+  fi
 fi
 
 EXEC_EXTENSION=".exe"
