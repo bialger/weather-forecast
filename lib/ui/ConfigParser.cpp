@@ -142,4 +142,3 @@ int32_t ConfigParser::GetLocationIndex() const {
 std::vector<std::string> ConfigParser::GetLocations() const {
   return locations_;
 }
-
