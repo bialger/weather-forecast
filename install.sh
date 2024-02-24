@@ -32,7 +32,11 @@ EXEC_LINK_PATH="$HOME/$PROJECT_NAME$EXEC_EXTENSION"
 
 if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --build "$CMAKE_PROJECT_DIR" --target "$PROJECT_NAME"); then
   printf 'Enter your Yandex Geocoder API key: ' && read -r API_KEY && echo "$API_KEY" > "$LOCAL_CONFIG_DIR/yandex_api_key.apikey"
-  cp -rf "$LOCAL_CONFIG_DIR" "$CONFIG_DIR"
+
+  if [ "x$SAVE_PREV" != "x" ]; then
+    cp -rf "$LOCAL_CONFIG_DIR" "$CONFIG_DIR"
+  fi
+
   rm -f "$EXEC_LINK_PATH"
   ln -s "$EXEC_PATH" "$EXEC_LINK_PATH"
   echo ''
