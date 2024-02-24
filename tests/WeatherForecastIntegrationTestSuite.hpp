@@ -8,6 +8,7 @@
 
 struct WeatherForecastIntegrationTestSuite : public testing::Test { // special test structure
   const std::string kTemporaryDirectoryName = "./gtest_integration_tmp";
+  static const std::string kExpectedHelp;
 
   void SetUp() override; // method that is called at the beginning of every test
 

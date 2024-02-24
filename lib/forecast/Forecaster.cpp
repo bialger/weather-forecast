@@ -11,22 +11,29 @@ Forecaster::Forecaster(int32_t days_count,
                        const std::string& config_dir,
                        ConditionalOutput error_output,
                        ConditionalOutput log_output) : geocoder_cache_("geocoder", config_dir),
-                                                         days_count_(days_count),
-                                                         location_index_(location_index),
-                                                         locations_(locations),
-                                                         api_key_(api_key),
-                                                         error_output_(error_output),
-                                                         log_output_(log_output),
-                                                         current_weather_("Now") {
+                                                       days_count_(days_count),
+                                                       location_index_(location_index),
+                                                       locations_(locations),
+                                                       api_key_(api_key),
+                                                       error_output_(error_output),
+                                                       log_output_(log_output),
+                                                       current_weather_("Now") {
   forecast_ = std::vector<WeatherDay>(WeatherDay::kDaysInForecast);
 }
 
 int32_t Forecaster::ObtainForecast() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Obtaining forecast for " << locations_[location_index_] << "\n";
+
   int32_t result = RequestPosition();
 
   if (result != 0) {
     return 1;
   }
+
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Coordinates obtained: " << geocoder_.GetLatitude() << " latitude, "
+              << geocoder_.GetLongitude() << " longitude\n";
 
   result = RequestForecast();
 
@@ -34,45 +41,71 @@ int32_t Forecaster::ObtainForecast() {
     return 1;
   }
 
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Forecast obtained successfully\n";
+
   return 0;
 }
 
 int32_t Forecaster::SwapToNext() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Swapping to next location from " << locations_[location_index_] << " (" << location_index_
+              << ") ";
+
   ++location_index_;
 
   if (location_index_ == locations_.size()) {
     location_index_ = 0;
   }
 
+  log_output_ << "to " << locations_[location_index_] << " (" << location_index_ << ")\n";
+
   return ObtainForecast();
 }
 
 int32_t Forecaster::SwapToPrev() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Swapping to previous location from " << locations_[location_index_] << " ("
+              << location_index_
+              << ") ";
+
   --location_index_;
 
   if (location_index_ == -1) {
     location_index_ = static_cast<int32_t>(locations_.size()) - 1;
   }
 
+  log_output_ << "to " << locations_[location_index_] << " (" << location_index_ << ")\n";
+
   return ObtainForecast();
 }
 
 int32_t Forecaster::AddDay() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Adding day from " << days_count_ << " ";
+
   ++days_count_;
 
   if (days_count_ == kUpperLimitDaysCount) {
     --days_count_;
   }
 
+  log_output_ << "to " << days_count_ << "\n";
+
   return 0;
 }
 
 int32_t Forecaster::RemoveDay() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Removing day from " << days_count_ << " ";
+
   --days_count_;
 
   if (days_count_ == kLowerLimitDaysCount) {
     ++days_count_;
   }
+
+  log_output_ << "to " << days_count_ << "\n";
 
   return 0;
 }
@@ -105,8 +138,14 @@ int32_t Forecaster::RequestPosition() {
   json answer = geocoder_cache_.GetJsonFromCache(locations_[location_index_]);
 
   if (answer != JsonCache::kNotFound) {
+    WriteCurrentTime(log_output_);
+    log_output_ << "FORECASTER: Coordinates were obtained from cache\n";
+
     return ProcessPosition(answer);
   }
+
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Obtaining coordinates from Yandex Geocoder\n";
 
   cpr::Response yandex_geocoder_response = cpr::Get(cpr::Url(Geocoder::kGeocoderUrl),
                                                     cpr::Parameters{
@@ -114,6 +153,14 @@ int32_t Forecaster::RequestPosition() {
                                                         {"apikey", api_key_},
                                                         {"format", "json"}
                                                     });
+
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Yandex Geocoder request: " << yandex_geocoder_response.url << "\n";
+
+
+  if (!yandex_geocoder_response.text.empty()) {
+    answer = json::parse(yandex_geocoder_response.text);
+  }
 
   if (yandex_geocoder_response.status_code != 200) {
     std::string error_message = "Invalid response! ";
@@ -129,13 +176,14 @@ int32_t Forecaster::RequestPosition() {
     return static_cast<int32_t>(yandex_geocoder_response.status_code);
   }
 
-  answer = json::parse(yandex_geocoder_response.text);
-
   return ProcessPosition(answer);
 }
 
 int32_t Forecaster::RequestForecast() {
   json answer{};
+
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Obtaining forecast from Open Meteo\n";
 
   std::string current_list = WeatherDay::kOpenMeteoNames.temperature + "," + WeatherDay::kOpenMeteoNames.humidity + ","
       + WeatherDay::kOpenMeteoNames.apparent_temperature + "," + WeatherDay::kOpenMeteoNames.precipitation + ","
@@ -158,13 +206,20 @@ int32_t Forecaster::RequestForecast() {
                                                    {"forecast_days", "16"}
                                                });
 
-  answer = json::parse(open_meteo_response.text);
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Open Meteo request: " << open_meteo_response.url << "\n";
+
+  if (!open_meteo_response.text.empty()) {
+    answer = json::parse(open_meteo_response.text);
+  }
 
   if (open_meteo_response.status_code != 200) {
     std::string error_message = "Invalid response! ";
     if (answer.contains("reason") && answer["reason"].is_string()) {
       error_message += "OpenMeteo sent an error.\nError description: " + answer["reason"].get<std::string>();
     } else if (open_meteo_response.status_code == 0) {
+      WriteCurrentTime(log_output_);
+      log_output_ << "FORECASTER: WARNING! OpenMeteo did not respond. Make sure that you have access to the Internet.\n";
       error_message += "OpenMeteo did not respond. Make sure that you have access to the Internet.";
     } else {
       error_message += "OpenMeteo sent an unknown error.";
@@ -173,10 +228,14 @@ int32_t Forecaster::RequestForecast() {
     DisplayError(error_message + "\n", error_output_);
     return static_cast<int32_t>(open_meteo_response.status_code);
   }
+
   return ProcessForecast(answer);
 }
 
 int32_t Forecaster::ProcessPosition(const json& answer) {
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Processing position\n";
+
   int32_t result = geocoder_.SetCoordinates(answer);
 
   if (result != 0) {
@@ -186,6 +245,12 @@ int32_t Forecaster::ProcessPosition(const json& answer) {
 
   geocoder_cache_.PutJsonToCache(locations_[location_index_], answer);
 
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Geocoder response put in cache for " << locations_[location_index_] << "\n";
+
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Position obtained successfully\n";
+
   return 0;
 }
 
@@ -194,7 +259,8 @@ int32_t Forecaster::ProcessForecast(const json& answer) {
     bool result = forecast_[day_number].SetForecast(answer, day_number);
 
     if (!result) {
-      DisplayError("Error while processing forecast.\n", error_output_);
+      geocoder_cache_.PutJsonToCache("error", answer);
+      DisplayError("Error while processing forecast for day " + std::to_string(day_number + 1) + ".\n", error_output_);
       return 1;
     }
   }
@@ -208,6 +274,9 @@ int32_t Forecaster::ProcessForecast(const json& answer) {
   }
 
   current_weather_ = WeatherDay::GetCurrentWeather(answer);
+
+  WriteCurrentTime(log_output_);
+  log_output_ << "FORECASTER: Forecast processed successfully for time " << last_time_ << "\n";
 
   return 0;
 }

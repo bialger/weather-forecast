@@ -5,7 +5,7 @@
 #include <limits>
 #include <iterator>
 #include <sstream>
-
+#include <iomanip>
 
 #include "utils.hpp"
 
@@ -113,11 +113,11 @@ bool IsDirectory(std::string& dirname) {
 }
 
 std::streamsize GetFileSize(const std::string& filename) {
-  std::ifstream file(filename, std::ios::in|std::ios::binary);
-  file.ignore( std::numeric_limits<std::streamsize>::max() );
+  std::ifstream file(filename, std::ios::in | std::ios::binary);
+  file.ignore(std::numeric_limits<std::streamsize>::max());
   std::streamsize length = file.gcount();
   file.clear();   //  Since ignore will have set eof.
-  file.seekg( 0, std::ios_base::beg );
+  file.seekg(0, std::ios_base::beg);
   return length;
 }
 
@@ -142,6 +142,32 @@ std::vector<std::string> Split(const std::string& str) {
   return {std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>()};
 }
 
+std::string GetCurrentTime() {
+  std::ostringstream oss;
+  ConditionalOutput target{oss, true};
+  WriteCurrentTime(target);
+  return oss.str();
+}
+
+void WriteCurrentTime(ConditionalOutput& target) {
+  if (!target.print_messages) {
+    return;
+  }
+
+  auto now = std::chrono::system_clock::now();
+  std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+  std::tm* parts = std::localtime(&now_c);
+
+  std::ios_base::fmtflags oldflags = target.out_stream.flags();
+  std::streamsize oldprecision = target.out_stream.precision();
+
+  target << std::put_time(parts, "%Y-%m-%d %H:%M:%S.") << std::setfill('0') << std::setw(3)
+         << (std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count() % 1000) << " ";
+
+  target.out_stream.flags(oldflags);
+  target.out_stream.precision(oldprecision);
+}
+
 /* The code provides dummy function definitions for Windows console-related
  * functions when the code is being compiled in a non-Windows environment.
  * This ensures that the code can compile and run without errors in such
@@ -149,8 +175,8 @@ std::vector<std::string> Split(const std::string& str) {
  * return their input parameters. */
 
 #if not(defined _WIN32 || defined _WIN64 || defined __CYGWIN__)
-int SetConsoleOutputCP(int a) {return a;}
-int SetConsoleCP(int a) {return a;}
-int GetStdHandle(int a) {return a;}
-int SetConsoleTextAttribute(int a, int b) {return a + b;}
+int SetConsoleOutputCP(int a) { return a; }
+int SetConsoleCP(int a) { return a; }
+int GetStdHandle(int a) { return a; }
+int SetConsoleTextAttribute(int a, int b) { return a + b; }
 #endif

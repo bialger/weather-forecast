@@ -45,9 +45,14 @@ TuiWorker::TuiWorker(Forecaster& forecaster, int32_t interval)
 }
 
 int32_t TuiWorker::Run() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Started with interval " << interval_ << "\n";
+
   std::thread([&] {
     while (true) {
       std::this_thread::sleep_for(std::chrono::hours(interval_));
+      WriteCurrentTime(log_output_);
+      log_output_ << "TUI: Refreshing in interval\n";
       ReloadScreen(Action::kRefresh);
     }
   }).detach();
@@ -61,6 +66,10 @@ int32_t TuiWorker::Run() {
   });
 
   screen_.Loop(component_renderer);
+
+  if (result_ != 0) {
+    error_output_ << "TUI: Error " << result_ << "\n";
+  }
 
   return result_;
 }
@@ -90,13 +99,18 @@ bool TuiWorker::HandleEvent(ftxui::Event event) {
       result_ = ReloadScreen(Action::kRefresh);
     }).detach();
   } else if (event == ftxui::Event::Character('q') || event == ftxui::Event::Escape) {
+    WriteCurrentTime(log_output_);
+    log_output_ << "TUI: Exiting for thread " << std::this_thread::get_id() << "\n";
     screen_.Exit();
     return true;
   } else if (event == ftxui::Event::Custom) {
+    WriteCurrentTime(log_output_);
+    log_output_ << "TUI: Screen refreshed for thread " << std::this_thread::get_id() << "\n";
     return true;
   }
 
   if (result_ != 0) {
+    error_output_ << "TUI: Exiting with error for thread " << std::this_thread::get_id() << "\n";
     screen_.Exit();
     return true;
   }
@@ -106,14 +120,21 @@ bool TuiWorker::HandleEvent(ftxui::Event event) {
 
 int32_t TuiWorker::ReloadScreen(Action action) {
   const std::lock_guard<std::mutex> guard(mutex_);
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Reloading screen with action ";
+
   int32_t result;
 
   switch (action) {
     case Action::kAddLine: {
+      log_output_ << "AddLine\n";
+
       forecaster_.AddDay();
       break;
     }
     case Action::kRemoveLine: {
+      log_output_ << "RemoveLine\n";
+
       forecaster_.RemoveDay();
 
       if (forecaster_.GetForecast().size() < start_focus_ + kFocusLen) {
@@ -123,14 +144,20 @@ int32_t TuiWorker::ReloadScreen(Action action) {
       break;
     }
     case Action::kNextLine: {
+      log_output_ << "NextLine\n";
+
       FocusNext();
       break;
     }
     case Action::kPrevLine: {
+      log_output_ << "PrevLine\n";
+
       FocusPrev();
       break;
     }
     case Action::kRefresh: {
+      log_output_ << "Refresh\n";
+
       result = forecaster_.ObtainForecast();
 
       if (result != 0) {
@@ -140,6 +167,8 @@ int32_t TuiWorker::ReloadScreen(Action action) {
       break;
     }
     case Action::kNext: {
+      log_output_ << "Next\n";
+
       result = forecaster_.SwapToNext();
 
       if (result != 0) {
@@ -149,6 +178,8 @@ int32_t TuiWorker::ReloadScreen(Action action) {
       break;
     }
     case Action::kPrev: {
+      log_output_ << "Prev\n";
+
       result = forecaster_.SwapToPrev();
 
       if (result != 0) {
@@ -162,35 +193,65 @@ int32_t TuiWorker::ReloadScreen(Action action) {
   RefreshElements();
   RedrawScreen();
 
+  if (result != 0) {
+    error_output_ << "Error in ReloadScreen in thread " << std::this_thread::get_id() << ", code " << result << "\n";
+  } else {
+    WriteCurrentTime(log_output_);
+    log_output_ << "TUI: Reloaded screen for thread " << std::this_thread::get_id() << "\n";
+  }
+
   return result;
 }
 
 void TuiWorker::RefreshElements() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Refreshing elements for thread " << std::this_thread::get_id() << "\n";
+
   elements_.clear();
   elements_.push_back(GetCurrentUnit());
   std::vector<WeatherDay> forecast = forecaster_.GetForecast();
 
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Forecast size: " << forecast.size() << "\n";
+
   for (size_t i = start_focus_; i < std::min(start_focus_ + kFocusLen, forecast.size()); ++i) {
     elements_.push_back(GetDay(forecast[i]));
   }
+
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Elements refreshed, added " << elements_.size()
+              << " elements, including current weather and days from " << start_focus_ << " to "
+              << (std::min(start_focus_ + kFocusLen, forecast.size()) - 1) << "\n";
 }
 
 void TuiWorker::RedrawScreen() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Redrawing screen for thread " << std::this_thread::get_id() << "\n";
   screen_.PostEvent(ftxui::Event::Custom);
 }
 
 void TuiWorker::FocusNext() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Focus switched to the next element from " << start_focus_;
+
   size_t forecast_days = forecaster_.GetForecast().size();
 
   if (start_focus_ + kFocusLen < forecast_days) {
     ++start_focus_;
   }
+
+  log_output_ << " to " << start_focus_ << "\n";
 }
 
 void TuiWorker::FocusPrev() {
+  WriteCurrentTime(log_output_);
+  log_output_ << "TUI: Focus switched to the previous element from " << start_focus_;
+
   if (start_focus_ > 0) {
     --start_focus_;
   }
+
+  log_output_ << " to " << start_focus_ << "\n";
 }
 
 ftxui::Element TuiWorker::GetWeatherIcon(int32_t weather_code) {

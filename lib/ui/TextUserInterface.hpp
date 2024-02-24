@@ -16,6 +16,7 @@ class TextUserInterface {
  public:
   static const std::string kProgramName;
   static const CompositeString kDefaultConfigPath;
+  static const CompositeString kDefaultLogPath;
 
   TextUserInterface(std::ostream& out, std::ostream& err, std::istream& in);
   TextUserInterface() = delete;

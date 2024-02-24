@@ -106,4 +106,12 @@ T MostCommon(InputIt begin, InputIt end) {
                           })->first;
 }
 
+/**\n This function returns the current time. */
+
+std::string GetCurrentTime();
+
+/**\n This function writes the current time to conditional stream. */
+
+void WriteCurrentTime(ConditionalOutput& target);
+
 #endif //UTILS_HPP_
