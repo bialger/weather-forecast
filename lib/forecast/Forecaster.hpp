@@ -30,8 +30,8 @@ class Forecaster {
   [[nodiscard]] WeatherTimeUnit GetCurrentWeather() const;
   [[nodiscard]] std::string GetLocation() const;
   [[nodiscard]] std::string GetLastForecastTime() const;
-  ConditionalOutput GetErrorOutput() const;
-  ConditionalOutput GetLogOutput() const;
+  [[nodiscard]] ConditionalOutput GetErrorOutput() const;
+  [[nodiscard]] ConditionalOutput GetLogOutput() const;
 
  private:
   std::vector<std::string> locations_{};
