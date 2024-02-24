@@ -71,29 +71,34 @@ classDiagram
   class TextUserInterface {
     +string kProgramName$
     +CompositeString kDefaultConfigPath$
+    +CompositeString kDefaultLogPath$
     -string kIntervalDescription$
     -string kDaysCountDescription$
     -ostream& out_
     -istream& in_
-    -ErrorOutput error_output_
+    -ConditionalOutput error_output_
     -ostringstream background_errors_
+    -ostringstream background_logs_
     -ArgParser parser_
     -CompositeString config_path_
     +GetPotentialConfigDirectories()$ vector~string~
     +Start(vector~string~ args) int
-    -BeginForecast() int
+    -BeginForecast(ConfigParser& config) int
   }
   class TuiWorker {
     +map~int, vector<string>~ kWeatherIcons$;
     -int kMaxWidth$
     -int kMaxHeight$
     -int kFocusLen$
-    -Forecaster& forecaster_;
-    -vector~Element~ elements_;
-    -ScreenInteractive screen_;
-    -size_t start_focus_;
-    -mutex mutex_;
-    -int result_;
+    -Forecaster& forecaster_
+    -ConditionalOutput error_output_
+    -ConditionalOutput log_output_
+    -int interval_
+    -vector~Element~ elements_
+    -ScreenInteractive screen_
+    -size_t start_focus_
+    -mutex mutex_
+    -int result_
     +Run() int
     -HandleEvent(Event event) bool;
     -RefreshElements() void;
@@ -106,6 +111,28 @@ classDiagram
     -GetDay(WeatherDay day)$ Element;
     -GetCurrentUnit() Element;
   }
+  class ConfigParser {
+    +int kLowerLimitIntervalSize$
+    +int kUpperLimitIntervalSize$
+    +string kDefaultLocation$
+    -int interval_
+    -int days_count_
+    -int location_index_
+    -ConditionalOutput error_output_
+    -string config_dir_
+    -vector~string~ locations_
+    -string api_key_
+    -string config_path_
+    +IsValidConfig(string str_config)$ bool
+    +ParseConfig() int
+    +GetApiKey() string
+    +GetConfigDir() string
+    +GetInterval() int
+    +GetDaysCount() int
+    +GetLocationIndex() int
+    +GetLocations() vector~string~
+    -SetApiKey(string api_key_path) int
+  }
   class Action {
     <<enumeration>>
     kNext,
@@ -117,6 +144,7 @@ classDiagram
     kPrevLine
   }
   TextUserInterface <.. TuiWorker
+  TextUserInterface <.. ConfigParser
   TuiWorker <.. Action
 ```
 
@@ -124,13 +152,21 @@ classDiagram
 
 Этот класс является основным классом модуля. Должен определять способ вывода ошибок и
 то, как обрабатываются аргументы командной строки. Должен содержать метод запуска 
-пользовательского интерфейса. Непосредственно взаимодействует с модулем ArgParser.
+пользовательского интерфейса. Должен выводить ошибки и логи, если они требуются. 
+Непосредственно взаимодействует с модулем ArgParser.
 
 #### Класс TuiWorker
 
 Этот класс является представлением текстового интерфейса программы. Должен содержать
-метод запуска и все необходимые методы для работы TUIб включая реакцию на 
-пользовательский ввод. Непосредственно взаимодейтсвует с модулем Forecast.
+метод запуска и все необходимые методы для работы TUI, включая реакцию на 
+пользовательский ввод. Должен выводить ошибки и логи, если они требуются. 
+Непосредственно взаимодействует с модулем Forecast.
+
+#### Класс ConfigParser
+
+Этот класс является представлением конфигурационного файла и его парсера. Он должен
+содержать метод парсинга указанного конфигурационного файла и все прочие необходимые 
+методы. Также должен иметь методы возврата полученных значений. Должен выводить ошибки.
 
 ### Архитектура подсистемы "Forecast"
 
@@ -153,23 +189,19 @@ title: Diagram of the module Forecast
 classDiagram
   direction TB
   class Forecaster {
-    +int kLowerLimitIntervalSize$
-    +int kUpperLimitIntervalSize$
     +int kLowerLimitDaysCount$
     +int kUpperLimitDaysCount$
-    +string kDefaultLocation$
     -vector~string~ locations_
-    -int interval_
     -int days_count_
     -int location_index_
-    -bool is_valid_
-    -string config_dir_
+    -string last_time_
+    -string api_key_
     -Geocoder geocoder_
     -vector~WeatherDay~ forecast_
     -WeatherTimeUnit current_weather_
     -JsonCache geocoder_cache_
-    -ErrorOutput error_output_
-    +IsValidConfig(string str_config)$ bool
+    -ConditionalOutput error_output_
+    -ConditionalOutput log_output_
     +ObtainForecast() int
     +SwapToNext() int
     +SwapToPrev() int
@@ -179,9 +211,8 @@ classDiagram
     +GetCurrentWeather() WeatherTimeUnit
     +GetLocation() string
     +GetLastForecastTime() string
-    +GetSleepInterval() int
-    +IsValid() bool
-    -ParseConfig(string str_config) int
+    +GetErrorOutput() ConditionalOutput
+    +GetLogOutput() ConditionalOutput
     -RequestPosition() int
     -RequestForecast() int
     -ProcessPosition(json answer) int
@@ -263,13 +294,12 @@ classDiagram
 
 #### Класс Forecaster
 
-Этот класс является основным классом модуля. Должен выводить свои ошибки в переданный 
-поток. Должен содержать методы обработки конфигурационного файла (включая метод, 
-проверяющий его валидность), методы запросов к 
+Этот класс является основным классом модуля. Должен выводить ошибки и логи, если они 
+требуются. Должен содержать методы запросов к 
 [Yandex Geocoder API](https://yandex.ru/dev/geocode/doc/ru/) и
 [Open Meteo API](https://open-meteo.com/en/docs#latitude=59.94&longitude=30.31&hourly=temperature_2m&forecast_days=16),
-метод получения результата по дням. Результат хотя бы некоторых запросов должен быть
-кеширован.
+метод получения результата по дням, а также методы навигации по дням и локациям. 
+Результат хотя бы некоторых запросов должен быть кеширован.
 
 #### Класс JsonCache
 
@@ -326,8 +356,8 @@ classDiagram
         -map~string, map~ string, size_t~~ arguments_by_type_;
         -map~char, string~ short_to_long_names_;
         -size_t help_index_;
-        +Parse(vector~string~ args, ErrorOutput error_output=()) bool
-        +Parse(int argc, char[][] argv, ErrorOutput error_output=()) bool
+        +Parse(vector~string~ args, ConditionalOutput error_output=()) bool
+        +Parse(int argc, char[][] argv, ConditionalOutput error_output=()) bool
         +Help() bool
         +HelpDescription() string
         +AddHelp(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~bool~ &
@@ -335,10 +365,10 @@ classDiagram
         +AddArgument~T~(char short_name, const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
         +AddArgument~T~(const char[] long_name, const char[] description="") ConcreteArgumentBuilder~T~ &
         +GetValue~T~(const char[] long_name, size_t index=0) T
-        -Parse_(vector~string~ args, ErrorOutput error_output) bool
+        -Parse_(vector~string~ args, ConditionalOutput error_output) bool
         -GetLongKeys(string current_argument) vector~string~
         -ParsePositionalArguments(vector~string~ argv, const vector~size_t~ & used_positions) void
-        -HandleErrors(ErrorOutput error_output) bool
+        -HandleErrors(ConditionalOutput error_output) bool
         -RefreshArguments() void
         -AddArgument_~T~(char short_name, const char[] long_name, const char[] description) ConcreteArgumentBuilder~T~ &
         -GetValue_~T~(const char* long_name, size_t index) T
