@@ -15,7 +15,9 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
+#ifndef _WINDOWS_
 #include <Windows.h>
+#endif
 #else
 #define CP_UTF8 0
 #define STD_OUTPUT_HANDLE 0
