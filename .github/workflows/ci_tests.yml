@@ -68,12 +68,12 @@ jobs:
       - name: Build main target
         shell: bash
         run: |
-          cmake --build cmake-build-release --target weather_forecast || echo "Built with errors"
+          cmake --build cmake-build-release --target weather-forecast || echo "Built with errors"
 
       - name: Build tests target
         shell: bash
         run: |
-          cmake --build cmake-build-debug --target weather_forecast_tests || echo "Built with errors"
+          cmake --build cmake-build-debug --target weather-forecast_tests || echo "Built with errors"
 
       - name: Run program
         shell: bash
@@ -81,14 +81,14 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
               if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-                ./weather_forecast.exe --help
+                ./weather-forecast.exe --help
               else
                 cd Debug
-                ./weather_forecast.exe --help
+                ./weather-forecast.exe --help
               fi
           else 
               cd bin
-              ./weather_forecast --help
+              ./weather-forecast --help
           fi
 
       - name: Run tests
@@ -97,14 +97,14 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
               if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-                ./weather_forecast_tests_.exe
+                ./weather-forecast_tests_.exe
               else
                 cd Debug
-                ./weather_forecast_tests.exe
+                ./weather-forecast_tests.exe
               fi
           else
               cd tests
-              ./weather_forecast_tests
+              ./weather-forecast_tests
           fi
 
   memory-leaks:
