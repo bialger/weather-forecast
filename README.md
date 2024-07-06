@@ -1,5 +1,6 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=13771998&assignment_repo_type=AssignmentRepo)
 # Лабораторная работа 7
+
+Документация проекта находится [в соответствующей папке](./docs/README.md).
 
 Прогноз погоды. Внешние библиотеки.
 
@@ -26,7 +27,7 @@
 
 В качестве образца для визуализации предлагается взять следующий:
 
-![image](interface.png) Скриншот взят с  https://wttr.in
+![image](assets/interface.png) Скриншот взят с  https://wttr.in
 
 ## Реализация
 
