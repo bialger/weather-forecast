@@ -55,7 +55,7 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --bui
       COMMON_EXEC_PATH="$COMMON_PROJECT_DIR/bin/$PROJECT_NAME"
 
       if [ "$CHOISE" = "y" ]; then
-        sudo rm -f "$COMMON_LINK_PATH"
+        sudo -S rm -f "$COMMON_LINK_PATH"
 
         if (sudo ln -s "$EXEC_PATH" "$COMMON_LINK_PATH"); then
           if [ -e "$COMMON_CONFIG_DIR" ]; then
@@ -83,7 +83,7 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --bui
     fi
 
     exit 0
-  else024d1f50-bba3-4e7f-a124-32ab0f76a567
+  else
     echo 'Oops! Could not execute the program.'
     exit 1
   fi
