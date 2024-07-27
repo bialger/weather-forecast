@@ -6,7 +6,6 @@ CMAKE_BUILD_DIR="$HOME/CMakeBuilds"
 CMAKE_PROJECT_DIR="$CMAKE_BUILD_DIR/$PROJECT_NAME"
 LOCAL_CONFIG_DIR="./.config"
 CONFIG_DIR="$HOME/.config/$PROJECT_NAME"
-REINSTALLED="false"
 
 if [ "x$SAVE_PREV" = "x" ]; then
   if [ -e "$CMAKE_PROJECT_DIR" ]; then
@@ -15,7 +14,6 @@ if [ "x$SAVE_PREV" = "x" ]; then
 
   if [ -e "$CONFIG_DIR" ]; then
     rm -rf "$CONFIG_DIR"
-    REINSTALLED="true"
   fi
 fi
 
@@ -35,11 +33,7 @@ EXEC_LINK_PATH="$HOME/$PROJECT_NAME$EXEC_EXTENSION"
 if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --build "$CMAKE_PROJECT_DIR" --target "$PROJECT_NAME"); then
   printf 'Enter your Yandex Geocoder API key: ' && read -r API_KEY && echo "$API_KEY" > "$LOCAL_CONFIG_DIR/yandex_api_key.apikey"
 
-  if [ "$REINSTALLED" = "false" ]; then
-    cp -rf "$LOCAL_CONFIG_DIR" "$CONFIG_DIR"
-  fi
-
-  if [ "x$SAVE_PREV" != "x" ]; then
+  if [ "x$SAVE_PREV" = "x" ]; then
     cp -rf "$LOCAL_CONFIG_DIR" "$CONFIG_DIR"
   fi
 
