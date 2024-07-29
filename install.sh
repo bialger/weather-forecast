@@ -83,6 +83,11 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release -G "Unix Makef
     fi
 
     exit 0
+  elif (cd "$CMAKE_PROJECT_DIR" && "./$PROJECT_NAME$EXEC_EXTENSION" -h >/dev/null 2>/dev/null); then
+    echo "Congratulations! $PROJECT_NAME was compiled successfully. But it is impossible to create a link to it - run it from $CMAKE_BUILD_DIR as .\\$PROJECT_NAME$EXEC_EXTENSION"
+    echo ''
+    cd "$CMAKE_PROJECT_DIR" && "./$PROJECT_NAME$EXEC_EXTENSION" -h
+    exit 0
   else
     echo 'Oops! Could not execute the program.'
     exit 1
