@@ -142,7 +142,7 @@ std::vector<std::string> Split(const std::string& str) {
   return {std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>()};
 }
 
-std::string GetCurrentTime() {
+std::string GetStringCurrentTime() {
   std::ostringstream oss;
   ConditionalOutput target{oss, true};
   WriteCurrentTime(target);

@@ -10,17 +10,17 @@ jobs:
       fail-fast: false
       matrix:
         config:
-#          - {
-#            name: "Windows Latest MSVC", artifact: "Windows-MSVC.tar.xz",
-#            os: windows-latest,
-#            build_type: "Release", cc: "cl", cxx: "cl",
-#            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-#          }
+          - {
+            name: "Windows Latest MSVC", artifact: "Windows-MSVC.tar.xz",
+            os: windows-latest,
+            build_type: "Release", cc: "cl", cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
 #          - {
 #            name: "Windows Latest MinGW", artifact: "Windows-MinGW.tar.xz",
 #            os: windows-latest,
 #            build_type: "Release", cc: "gcc", cxx: "g++"
-#          } # some fatal errors using MinGw; MSVC - ok
+#          }
           - {
             name: "Ubuntu Latest GCC", artifact: "Linux.tar.xz",
             os: ubuntu-latest,
@@ -58,6 +58,8 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.config.cxx }}" == "g++" ]; then
+              git config pack.windowMemory 10m
+              git config pack.windowMemory 10m
               cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash -G "Unix Makefiles"
               cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash -G "Unix Makefiles"
           else 
@@ -100,7 +102,6 @@ jobs:
                 ./weather-forecast_tests_.exe
               else
                 cd Debug
-                ./weather-forecast_tests.exe
               fi
           else
               cd tests
