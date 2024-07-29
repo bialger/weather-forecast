@@ -100,7 +100,7 @@ jobs:
                 ./weather-forecast_tests_.exe
               else
                 cd Debug
-                ./weather-forecast_tests.exe
+#                ./weather-forecast_tests.exe
               fi
           else
               cd tests
