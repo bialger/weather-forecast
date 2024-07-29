@@ -110,7 +110,7 @@ T MostCommon(InputIt begin, InputIt end) {
 
 /**\n This function returns the current time. */
 
-std::string GetCurrentTime();
+std::string GetStringCurrentTime();
 
 /**\n This function writes the current time to conditional stream. */
 
