@@ -230,10 +230,15 @@ std::vector<std::string> TextUserInterface::GetPotentialConfigDirectories() {
   }
 
   if (IsWindows()) {
-    std::string home_path_cmd = std::getenv("userprofile");
-    std::string home_path_shell = std::getenv("HOME");
-    potential_config_dirs.push_back(home_path_cmd + "/.config/weather-forecast");
-    potential_config_dirs.push_back(home_path_shell + "/.config/weather-forecast");
+    try {
+      std::string home_path_cmd = std::getenv("userprofile");
+      potential_config_dirs.push_back(home_path_cmd + "/.config/weather-forecast");
+    } catch (const std::exception&) {}
+
+    try {
+      std::string home_path_shell = std::getenv("HOME");
+      potential_config_dirs.push_back(home_path_shell + "/.config/weather-forecast");
+    } catch (const std::exception&) {}
   } else {
     potential_config_dirs.emplace_back("~/.config/weather-forecast");
     potential_config_dirs.emplace_back("/etc/weather-forecast");
