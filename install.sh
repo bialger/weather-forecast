@@ -18,7 +18,7 @@ if [ "x$SAVE_PREV" = "x" ]; then
 fi
 
 EXEC_EXTENSION=".exe"
-EXEC_PATH="$CMAKE_PROJECT_DIR/Debug/$PROJECT_NAME$EXEC_EXTENSION"
+EXEC_PATH="$CMAKE_PROJECT_DIR/$PROJECT_NAME$EXEC_EXTENSION"
 
 if [ "$OS_NAME" = "Linux" ]; then
   EXEC_EXTENSION=".run"
@@ -30,7 +30,7 @@ fi
 
 EXEC_LINK_PATH="$HOME/$PROJECT_NAME$EXEC_EXTENSION"
 
-if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release && cmake --build "$CMAKE_PROJECT_DIR" --target "$PROJECT_NAME"); then
+if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" && cmake --build "$CMAKE_PROJECT_DIR" --target "$PROJECT_NAME"); then
   printf 'Enter your Yandex Geocoder API key: ' && read -r API_KEY && echo "$API_KEY" > "$LOCAL_CONFIG_DIR/yandex_api_key.apikey"
 
   if [ "x$SAVE_PREV" = "x" ]; then
