@@ -40,7 +40,7 @@ jobs:
         run: |
           if [ "${{ matrix.config.cxx }}" == "g++" ]; then
               git config pack.windowMemory 10m
-              cmake -S . -B cmake-build-release-DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
+              cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
               cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles"
           else 
               cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
