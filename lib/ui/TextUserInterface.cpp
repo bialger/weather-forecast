@@ -7,6 +7,8 @@
 #include "ConfigParser.hpp"
 
 const std::string TextUserInterface::kProgramName = "weather-forecast";
+const std::string TextUserInterface::kVersion = "1.3.0 Ferdinando II de' Medici";
+const std::string TextUserInterface::kHelpText = "A program for displaying the weather forecast in the terminal.\nCurrent version is " + kVersion + ".";
 const CompositeString TextUserInterface::kDefaultConfigPath = "default_config.json";
 const CompositeString TextUserInterface::kDefaultLogPath = "Print to standard output";
 const std::string TextUserInterface::kIntervalDescription =
@@ -41,7 +43,7 @@ TextUserInterface::TextUserInterface(std::ostream& out, std::ostream& err, std::
   parser_.AddCompositeArgument('c', "config", "Path to the configuration file").Default(kDefaultConfigPath)
       .StoreValue(config_path_).AddValidate(&IsValidFilename).AddIsGood(&IsRegularFile);
   parser_.AddCompositeArgument('L', "log-file", "Path to the log file. If not specified, prints to standard output")
-  .Default(kDefaultLogPath).AddValidate(&IsValidFilename).AddIsGood(IsNotADirectory);
+      .Default(kDefaultLogPath).AddValidate(&IsValidFilename).AddIsGood(IsNotADirectory);
   parser_.AddStringArgument('l', "location", "Name of the location for which the forecast is requested")
       .Default(ConfigParser::kDefaultLocation);
   parser_.AddIntArgument('i',
@@ -53,7 +55,7 @@ TextUserInterface::TextUserInterface(std::ostream& out, std::ostream& err, std::
                          kDaysCountDescription.c_str())
       .Default(Forecaster::kLowerLimitDaysCount).AddIsGood(IsGoodDaysCount);
   parser_.AddFlag('v', "verbose", "Print additional information to the terminal.");
-  parser_.AddHelp('h', "help", "A program for displaying the weather forecast in the terminal.");
+  parser_.AddHelp('h', "help", kHelpText.c_str());
 }
 
 int32_t TextUserInterface::Start(const std::vector<std::string>& args) {

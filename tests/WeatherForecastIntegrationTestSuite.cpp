@@ -2,6 +2,7 @@
 
 const std::string WeatherForecastIntegrationTestSuite::kExpectedHelp = "weather-forecast\n"
                                   "A program for displaying the weather forecast in the terminal.\n"
+                                  "Current version is 1.3.0 Ferdinando II de' Medici.\n"
                                   "\n"
                                   "OPTIONS:\n"
                                   "-l,  --location=<string>:  Name of the location for which the forecast is requested [default = First location in config]\n"
