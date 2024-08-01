@@ -38,8 +38,9 @@ jobs:
       - name: Create CMake cache
         shell: bash
         run: |
+          git config --replace-all pack.windowMemory 10m
+          git config --replace-all pack.packSizeLimit 20m
           if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-              git config pack.windowMemory 10m
               cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
               cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles"
           else 

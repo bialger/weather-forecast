@@ -30,6 +30,9 @@ fi
 
 EXEC_LINK_PATH="$HOME/$PROJECT_NAME$EXEC_EXTENSION"
 
+git config --replace-all pack.windowMemory 10m
+git config --replace-all pack.packSizeLimit 20m
+
 if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" && cmake --build "$CMAKE_PROJECT_DIR" --target "$PROJECT_NAME"); then
   printf 'Enter your Yandex Geocoder API key: ' && read -r API_KEY && echo "$API_KEY" > "$LOCAL_CONFIG_DIR/yandex_api_key.apikey"
 
@@ -84,7 +87,7 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release -G "Unix Makef
 
     exit 0
   elif (cd "$CMAKE_PROJECT_DIR" && "./$PROJECT_NAME$EXEC_EXTENSION" -h >/dev/null 2>/dev/null); then
-    echo "Congratulations! $PROJECT_NAME was compiled successfully. But it is impossible to create a link to it - run it from $CMAKE_BUILD_DIR as .\\$PROJECT_NAME$EXEC_EXTENSION"
+    echo "Congratulations! $PROJECT_NAME was compiled successfully. But it is impossible to create a link to it - run it from $CMAKE_PROJECT_DIR as .\\$PROJECT_NAME$EXEC_EXTENSION"
     echo ''
     cd "$CMAKE_PROJECT_DIR" && "./$PROJECT_NAME$EXEC_EXTENSION" -h
     exit 0
