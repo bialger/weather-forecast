@@ -15,6 +15,8 @@
 class TextUserInterface {
  public:
   static const std::string kProgramName;
+  static const std::string kVersion;
+  static const std::string kHelpText;
   static const CompositeString kDefaultConfigPath;
   static const CompositeString kDefaultLogPath;
 

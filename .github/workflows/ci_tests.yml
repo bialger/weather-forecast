@@ -20,7 +20,7 @@ jobs:
 #            name: "Windows Latest MinGW", artifact: "Windows-MinGW.tar.xz",
 #            os: windows-latest,
 #            build_type: "Release", cc: "gcc", cxx: "g++"
-#          }
+#          } # Well, I should admit that MinGW in GitHub actions has some issues. On my local machine it works fine.
           - {
             name: "Ubuntu Latest GCC", artifact: "Linux.tar.xz",
             os: ubuntu-latest,
@@ -35,36 +35,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Configure
-        shell: cmake -P {0}
-        run: |
-          set(ENV{CC} ${{ matrix.config.cc }})
-          set(ENV{CXX} ${{ matrix.config.cxx }})
-          
-          if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
-            execute_process(
-              COMMAND "${{ matrix.config.environment_script }}" && set
-              OUTPUT_FILE environment_script_output.txt
-            )
-            file(STRINGS environment_script_output.txt output_lines)
-            foreach(line IN LISTS output_lines)
-              if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
-                set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
-              endif()
-            endforeach()
-          endif()
-
       - name: Create CMake cache
         shell: bash
         run: |
+          git config --replace-all pack.windowMemory 10m
+          git config --replace-all pack.packSizeLimit 20m
           if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-              git config pack.windowMemory 10m
-              git config pack.windowMemory 10m
-              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash -G "Unix Makefiles"
-              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash -G "Unix Makefiles"
+              cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
+              cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles"
           else 
-              cmake -S . -B cmake-build-release -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Release -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash
-              cmake -S . -B cmake-build-debug -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_BUILD_TYPE=Debug -DGTEST_RELATIVE_DIR=lib -DTERMINAL_EMULATOR=bash
+              cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
+              cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug
           fi
 
       - name: Build main target
@@ -82,12 +63,7 @@ jobs:
         working-directory: ./cmake-build-release
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-              if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-                ./weather-forecast.exe --help
-              else
-                cd Debug
-                ./weather-forecast.exe --help
-              fi
+              ./weather-forecast.exe --help
           else 
               cd bin
               ./weather-forecast --help
@@ -99,9 +75,10 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
               if [ "${{ matrix.config.cxx }}" == "g++" ]; then
-                ./weather-forecast_tests_.exe
+                  echo "Currently unable to run tests on ${{ matrix.config.name }}. See https://gitmemories.com/cristianadam/HelloWorld/issues/12 and https://github.com/microsoft/vscode-cmake-tools/issues/2451"
+                  #./weather-forecast_tests.exe
               else
-                cd Debug
+                  ./weather-forecast_tests.exe
               fi
           else
               cd tests

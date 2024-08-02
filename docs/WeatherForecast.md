@@ -9,11 +9,15 @@ weather-forecast.
 поддерживающего стандарт C++20.
 Также потребуется ключ от [Yandex Geocoder API](https://yandex.ru/dev/geocode/doc/ru/).
 
-> **Важно!**<br>
-> Для ОС Windows успешная сборка и компиляция возможна **только** при
-> установленном `Visual Studio 2017+`.
+> Если Вам не хочется получать ключ, можно воспользоваться архивом кэша:
+> [cache.zip](https://github.com/bialger/weather-forecast/releases/download/v1.2.0/cache.zip).
+> После распаковки поместите в каталог `./.config`, а затем начните установку.
 
 ## Как собрать
+
+> **Важно!**<br>
+> Для ОС Windows успешная сборка и компиляция возможна **только** при
+> установленном компиляторе `MinGW`.
 
 В данном документе описана исключительно процедура сборки главного исполняемого
 файла.
@@ -67,13 +71,19 @@ read -r API_KEY && echo "$API_KEY" > "./.config/yandex_api_key.apikey"
 cp -r ./.config ~/.config/weather-forecast
 ```
 
-* Создайте символьную ссылку на исполняемый файл (~/weather-forecast.run):
+* Создайте символьную ссылку на исполняемый файл (`~/weather-forecast.run`):
 
 ```shell
 ln -s ~/CMakeBuilds/weather-forecast/bin/weather-forecast ~/weather-forecast.run
 ```
 
-#### Windows
+* Запустите программу:
+
+```shell
+~/weather-forecast.run
+```
+
+#### Windows (`cmd.exe`)
 
 * Создайте Release-кеш CMake:
 
@@ -100,11 +110,28 @@ SET /P API_KEY="Enter your Yandex Geocoder API key: " && echo %API_KEY% > ".conf
 xcopy /si .config "%userprofile%\.config\weather-forecast"
 ```
 
-* Создайте символьную ссылку на исполняемый файл (HOME/weather-forecast.exe).
-  Выполнение этой команды требует привилегий администратора.
+* Скопируйте исполняемый файл и библиотеки в каталог `%userprofile%\weather-forecast` для быстрого доступа
 
 ```shell
-mklink "%userprofile%\weather-forecast.exe" "%userprofile%\CMakeBuilds\weather-forecast\Debug\weather-forecast.exe"
+mkdir "%userprofile%\weather-forecast"
+copy "%userprofile%\CMakeBuilds\weather-forecast\weather-forecast.exe" "%userprofile%\weather-forecast\weather-forecast.exe"
+copy "%userprofile%\CMakeBuilds\weather-forecast\libcpr.dll" "%userprofile%\weather-forecast\libcpr.dll"
+copy "%userprofile%\CMakeBuilds\weather-forecast\libcurl.dll" "%userprofile%\weather-forecast\libcurl.dll"
+```
+
+* Создайте символьную ссылку на исполняемый файл (`%userprofile%\weather-forecast\weather-forecast.exe`):
+
+```shell
+mklink "%userprofile%\weather-forecast.exe" "%userprofile%\weather-forecast\weather-forecast.exe"
+```
+
+> Для Windows запуск такой ссылки из командной строки или иного эмулятора терминала 
+> полноценно невозможен, только из Проводника.
+
+* Запустите программу:
+
+```shell
+cd %userprofile%\weather-forecast && .\weather-forecast.exe
 ```
 
 ## Использование
@@ -113,9 +140,9 @@ mklink "%userprofile%\weather-forecast.exe" "%userprofile%\CMakeBuilds\weather-f
 Предусмотрен показ погоды для локаций, перечисленных в конфигурационном файле, на
 текущий момент, а также на утро, день, вечер и ночь некоторого количества дней.
 Программа в один момент времени отображает непосредственно прогноз на три дня, для
-просмотра прочих следует использовать навигации. В случае отсутствия 
-Интернет-соединения программа запустится, однако не будет отображать актуальную 
-информацию. Для получения актуальных данных возобновите подключение и обновите 
+просмотра прочих следует использовать навигации. В случае отсутствия
+Интернет-соединения программа запустится, однако не будет отображать актуальную
+информацию. Для получения актуальных данных возобновите подключение и обновите
 данные в программе.
 
 > Поскольку программа использует
@@ -146,10 +173,10 @@ mklink "%userprofile%\weather-forecast.exe" "%userprofile%\CMakeBuilds\weather-f
   содержащее список локаций (строк, содержащие адрес или название города на
   английском языке) для показа погоды; поле `defaults`, содержащее следующие
   значения параметров по умолчанию:
-  * `interval` - как аргумент `--interval`.
-  * `days_count` - как аргумент `--days-count`
-  * `location_index` - целое неотрицательное число, являющееся индексом локации
-    по умолчанию из списка `locations`. Строго меньше количества локаций.
+    * `interval` - как аргумент `--interval`.
+    * `days_count` - как аргумент `--days-count`
+    * `location_index` - целое неотрицательное число, являющееся индексом локации
+      по умолчанию из списка `locations`. Строго меньше количества локаций.
 * `-L` или `--log-file` - строка с именем файла для записи логов. Имя файла должно
   быть валидным, в частности, не являться именем каталога. Если параметр не указан,
   логи выводятся в стандартный поток вывода.
@@ -161,7 +188,7 @@ mklink "%userprofile%\weather-forecast.exe" "%userprofile%\CMakeBuilds\weather-f
   обновления получается из конфигурационного файла.
 * `-v` или `--verbose` - флаг, при истинности которого происходит вывод логов работы
   программы.
-* `-h` или `--help` - флаг, при истинности которого вместо выполнения программы 
+* `-h` или `--help` - флаг, при истинности которого вместо выполнения программы
   происходит вывод справки и завершение работы.
 
 ### Использование
