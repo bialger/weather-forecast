@@ -87,9 +87,15 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release -G "Unix Makef
 
     exit 0
   elif (cd "$CMAKE_PROJECT_DIR" && "./$PROJECT_NAME$EXEC_EXTENSION" -h >/dev/null 2>/dev/null); then
-    echo "Congratulations! $PROJECT_NAME was compiled successfully. But it is impossible to create a link to it - run it from $CMAKE_PROJECT_DIR as .\\$PROJECT_NAME$EXEC_EXTENSION"
+    echo "Congratulations! $PROJECT_NAME was compiled successfully."
+    echo "Because of Windows-specific limitations, it is not possible to create a link to it."
+    echo "You can run it from $HOME/$PROJECT_NAME as .\\$PROJECT_NAME$EXEC_EXTENSION"
     echo ''
-    cd "$CMAKE_PROJECT_DIR" && "./$PROJECT_NAME$EXEC_EXTENSION" -h
+    mkdir "$HOME/$PROJECT_NAME"
+    cp "$CMAKE_PROJECT_DIR/$PROJECT_NAME$EXEC_EXTENSION" "$HOME/$PROJECT_NAME/$PROJECT_NAME$EXEC_EXTENSION"
+    cp "$CMAKE_PROJECT_DIR/libcpr.dll" "$HOME/$PROJECT_NAME/libcpr.dll"
+    cp "$CMAKE_PROJECT_DIR/libcurl.dll" "$HOME/$PROJECT_NAME/libcurl.dll"
+    cd "$HOME/$PROJECT_NAME" && "./$PROJECT_NAME$EXEC_EXTENSION" -h
     exit 0
   else
     echo 'Oops! Could not execute the program.'
