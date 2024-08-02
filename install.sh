@@ -87,9 +87,12 @@ if (cmake -S . -B "$CMAKE_PROJECT_DIR" -DCMAKE_BUILD_TYPE=Release -G "Unix Makef
 
     exit 0
   elif (cd "$CMAKE_PROJECT_DIR" && "./$PROJECT_NAME$EXEC_EXTENSION" -h >/dev/null 2>/dev/null); then
+    rm -f "$EXEC_LINK_PATH"
     echo "Congratulations! $PROJECT_NAME was compiled successfully."
     echo "Because of Windows-specific limitations, it is not possible to create a link to it."
     echo "You can run it from $HOME/$PROJECT_NAME as .\\$PROJECT_NAME$EXEC_EXTENSION"
+    echo "Or you can run CMD.EXE with administrative privileges and type: "
+    echo 'mklink "%userprofile%\weather-forecast.exe" "%userprofile%\weather-forecast\weather-forecast.exe"'
     echo ''
     mkdir "$HOME/$PROJECT_NAME"
     cp "$CMAKE_PROJECT_DIR/$PROJECT_NAME$EXEC_EXTENSION" "$HOME/$PROJECT_NAME/$PROJECT_NAME$EXEC_EXTENSION"
