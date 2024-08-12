@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(
         weather-forecast
-        VERSION 1.3
+        VERSION 1.3.5
         DESCRIPTION "Console weather forecast app that uses OpenMeteo and Yandex Geocoder API"
         LANGUAGES CXX
 )

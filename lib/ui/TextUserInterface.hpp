@@ -6,10 +6,11 @@
 #include <string>
 #include <cstdint>
 
+#include <argparser/ArgParser.hpp>
+
 #include "ConfigParser.hpp"
 
 #include "lib/utils/utils.hpp"
-#include "lib/argparser/ArgParser.hpp"
 #include "lib/forecast/Forecaster.hpp"
 
 class TextUserInterface {

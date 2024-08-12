@@ -7,7 +7,7 @@
 #include "ConfigParser.hpp"
 
 const std::string TextUserInterface::kProgramName = "weather-forecast";
-const std::string TextUserInterface::kVersion = "1.3.0 Ferdinando II de' Medici";
+const std::string TextUserInterface::kVersion = "1.3.5 Ferdinando II de' Medici";
 const std::string TextUserInterface::kHelpText = "A program for displaying the weather forecast in the terminal.\nCurrent version is " + kVersion + ".";
 const CompositeString TextUserInterface::kDefaultConfigPath = "default_config.json";
 const CompositeString TextUserInterface::kDefaultLogPath = "Print to standard output";
