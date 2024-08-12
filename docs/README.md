@@ -11,5 +11,5 @@
 
 ## Итоговая документация 
 
-* [Модуль ArgParser](../lib/argparser/docs/README.md)
+* [Модуль ArgParser, v1.1.0](https://github.com/bialger/ArgParser/blob/v1.1.0/lib/argparser/docs/README.md)
 * [Мануал weather-forecast](WeatherForecast.md)
