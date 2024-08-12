@@ -11,14 +11,14 @@ FetchContent_Declare(ftxui
 
 FetchContent_MakeAvailable(ftxui)
 
-add_library(ftxui_interface STATIC
-        ftxui_interface.cpp
+add_library(ftxui_interface INTERFACE
+        ftxui_interface.hpp
 )
 
-target_link_libraries(ftxui_interface PUBLIC
+target_link_libraries(ftxui_interface INTERFACE
         ftxui::screen
         ftxui::dom
         ftxui::component
 )
 
-target_include_directories(ftxui_interface PUBLIC ${PROJECT_SOURCE_DIR})
+target_include_directories(ftxui_interface INTERFACE ${PROJECT_SOURCE_DIR})

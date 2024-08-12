@@ -5,7 +5,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include "lib/argparser/basic/BasicFunctions.hpp"
+#include <argparser/basic/BasicFunctions.hpp>
 
 struct ArgParserUnitTestSuite : public testing::Test { // special test structure
   const std::string kTemporaryDirectoryName = (ArgumentParser::IsWindows() ? "" : "./") + std::string("gtest_argparser_tmp");

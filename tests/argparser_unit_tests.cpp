@@ -1,9 +1,9 @@
 #include <sstream>
 
-#include "lib/argparser/ArgParser.hpp"
+#include <argparser/ArgParser.hpp>
+#include <gtest/gtest.h>
 #include "test_functions.hpp"
 #include "ArgParserUnitTestSuite.hpp"
-#include <gtest/gtest.h>
 
 using namespace ArgumentParser;
 
