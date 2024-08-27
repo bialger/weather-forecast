@@ -70,8 +70,6 @@ classDiagram
     +string kProgramName$
     +CompositeString kDefaultConfigPath$
     +CompositeString kDefaultLogPath$
-    -string kIntervalDescription$
-    -string kDaysCountDescription$
     -ostream& out_
     -istream& in_
     -ConditionalOutput error_output_

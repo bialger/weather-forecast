@@ -8,4 +8,4 @@
 * [Проблема](dev/problem.md)
 * [Требования](dev/requirements.md)
 * [Архитектура](dev/architecture.md)
-* [Модуль ArgParser, v1.1.0](https://github.com/bialger/ArgParser/blob/v1.1.0/lib/argparser/docs/README.md)
+* [Модуль ArgParser, v1.3.0](https://github.com/bialger/ArgParser/blob/v1.3.0/lib/argparser/docs/README.md)
