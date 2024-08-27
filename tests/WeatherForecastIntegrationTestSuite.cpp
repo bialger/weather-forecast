@@ -1,6 +1,6 @@
 #include "WeatherForecastIntegrationTestSuite.hpp"
 
-const std::string WeatherForecastIntegrationTestSuite::kExpectedHelp = "weather-forecast 1.3.5 Ferdinando II de' Medici\n"
+const std::string WeatherForecastIntegrationTestSuite::kExpectedHelp = "weather-forecast 1.3.6 Ferdinando II de' Medici\n"
                                   "A program for displaying the weather forecast in the terminal.\n"
                                   "\n"
                                   "OPTIONS:\n"
