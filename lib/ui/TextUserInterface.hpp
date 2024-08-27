@@ -17,7 +17,6 @@ class TextUserInterface {
  public:
   static const std::string kProgramName;
   static const std::string kVersion;
-  static const std::string kHelpText;
   static const CompositeString kDefaultConfigPath;
   static const CompositeString kDefaultLogPath;
 
@@ -29,9 +28,6 @@ class TextUserInterface {
   static std::vector<std::string> GetPotentialConfigDirectories();
 
  private:
-  static const std::string kIntervalDescription;
-  static const std::string kDaysCountDescription;
-
   std::ostream& out_;
   std::istream& in_;
   ConditionalOutput error_output_;
