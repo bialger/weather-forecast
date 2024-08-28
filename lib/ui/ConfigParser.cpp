@@ -5,6 +5,7 @@
 #include "ConfigParser.hpp"
 
 #include "lib/utils/utils.hpp"
+#include "lib/forecast/Forecaster.hpp"
 
 const std::string ConfigParser::kDefaultLocation = "First location in config";
 
@@ -32,9 +33,9 @@ bool ConfigParser::IsValidConfig(const std::string& str_config) {
     return false;
   }
 
-  json api_key_file = config["api_key_file"];
-  json locations = config["locations"];
-  json defaults = config["defaults"];
+  const json& api_key_file = config["api_key_file"];
+  const json& locations = config["locations"];
+  const json& defaults = config["defaults"];
 
   if (!api_key_file.is_string() || !locations.is_array() || !defaults.is_object()) {
     return false;
@@ -55,10 +56,10 @@ int32_t ConfigParser::ParseConfig() {
     return 1;
   }
 
-  json config = json::parse(str_config);
-  json api_key_file = config["api_key_file"];
-  json locations = config["locations"];
-  json defaults = config["defaults"];
+  const json config = json::parse(str_config);
+  const json& api_key_file = config["api_key_file"];
+  const json& locations = config["locations"];
+  const json& defaults = config["defaults"];
 
   std::string api_key_path = config_dir_ + "/" + api_key_file.get<std::string>();
 
@@ -67,7 +68,7 @@ int32_t ConfigParser::ParseConfig() {
     return 1;
   }
 
-  int32_t result = SetApiKey(api_key_path);
+  const int32_t result = SetApiKey(api_key_path);
 
   if (result != 0) {
     DisplayError("Invalid API key!\n", error_output_);
@@ -86,7 +87,7 @@ int32_t ConfigParser::ParseConfig() {
     days_count_ = defaults["days_count"].get<int32_t>();
   }
 
-  size_t listed_locations_size = locations.size();
+  const size_t listed_locations_size = locations.size();
   interval_ = std::clamp(interval_, kLowerLimitIntervalSize + 1, kUpperLimitIntervalSize - 1);
   days_count_ = std::clamp(days_count_, Forecaster::kLowerLimitDaysCount + 1, Forecaster::kUpperLimitDaysCount - 1);
   location_index_ = std::clamp(location_index_, 0, static_cast<int32_t>(listed_locations_size + locations_.size() - 1));
@@ -100,15 +101,15 @@ int32_t ConfigParser::ParseConfig() {
 
 int32_t ConfigParser::SetApiKey(const std::string& api_key_path) {
   std::ifstream api_key_file_(api_key_path);
-  std::string api_key = std::string((std::istreambuf_iterator<char>(api_key_file_)),
-                                    std::istreambuf_iterator<char>());
+  auto api_key = std::string((std::istreambuf_iterator<char>(api_key_file_)),
+                             std::istreambuf_iterator<char>());
 
   if (api_key.size() < 36) {
     return 1;
   }
 
   api_key = api_key.substr(0, 36);
-  std::regex yandex_api_regex = std::regex(R"(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$)");
+  const auto yandex_api_regex = std::regex(R"(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$)");
 
   if (!std::regex_match(api_key, yandex_api_regex)) {
     return 1;

@@ -7,38 +7,37 @@
 #include "ConfigParser.hpp"
 
 const std::string TextUserInterface::kProgramName = "weather-forecast";
-const std::string TextUserInterface::kVersion = "1.3.5 Ferdinando II de' Medici";
-const std::string TextUserInterface::kHelpText = "A program for displaying the weather forecast in the terminal.\nCurrent version is " + kVersion + ".";
+const std::string TextUserInterface::kVersion = "1.3.6 Ferdinando II de' Medici";
 const CompositeString TextUserInterface::kDefaultConfigPath = "default_config.json";
 const CompositeString TextUserInterface::kDefaultLogPath = "Print to standard output";
-const std::string TextUserInterface::kIntervalDescription =
-    "Initial time between weather forecast updates in hours. Should be more than "
-        + std::to_string(ConfigParser::kLowerLimitIntervalSize) + " and less than "
-        + std::to_string(ConfigParser::kUpperLimitIntervalSize)
-        + ". The default value means using the parameter from the configuration file.";
-const std::string TextUserInterface::kDaysCountDescription =
-    "Initial number of days for which the forecast is shown. Should be more than "
-        + std::to_string(Forecaster::kLowerLimitDaysCount) + " and less than "
-        + std::to_string(Forecaster::kUpperLimitDaysCount)
-        + ". The default value means using the parameter from the configuration file.";
 
 TextUserInterface::TextUserInterface(std::ostream& out, std::ostream& err, std::istream& in)
-    : out_(out), in_(in), error_output_{err, true}, parser_(kProgramName.c_str()) {
+    : out_(out), in_(in), error_output_{err, true}, parser_(kProgramName + " " + kVersion) {
   config_path_ = kDefaultConfigPath;
 
-  std::function<bool(std::string&)> IsGoodIntervalLength = [&](std::string& str_size) -> bool {
-    int32_t block_size = std::stoi(str_size);
+  const std::function<bool(std::string&)> IsGoodIntervalLength = [&](const std::string& str_size) -> bool {
+    const int32_t block_size = std::stoi(str_size);
     return block_size > ConfigParser::kLowerLimitIntervalSize && block_size < ConfigParser::kUpperLimitIntervalSize;
   };
 
-  std::function<bool(std::string&)> IsGoodDaysCount = [&](std::string& str_count) -> bool {
-    int32_t days_count = std::stoi(str_count);
+  const std::function<bool(std::string&)> IsGoodDaysCount = [&](const std::string& str_count) -> bool {
+    const int32_t days_count = std::stoi(str_count);
     return days_count > Forecaster::kLowerLimitDaysCount && days_count < Forecaster::kUpperLimitDaysCount;
   };
 
-  std::function<bool(std::string&)> IsNotADirectory = [&](std::string& potential_filename) -> bool {
+  const std::function<bool(std::string&)> IsNotADirectory = [&](std::string& potential_filename) -> bool {
     return !IsDirectory(potential_filename);
   };
+
+  const std::string interval_description = "Initial time between weather forecast updates in hours. Should be more than "
+      + std::to_string(ConfigParser::kLowerLimitIntervalSize) + " and less than "
+      + std::to_string(ConfigParser::kUpperLimitIntervalSize)
+      + ". The default value means using the parameter from the configuration file.";
+
+  const std::string days_count_description = "Initial number of days for which the forecast is shown. Should be more than "
+      + std::to_string(Forecaster::kLowerLimitDaysCount) + " and less than "
+      + std::to_string(Forecaster::kUpperLimitDaysCount)
+      + ". The default value means using the parameter from the configuration file.";
 
   parser_.AddCompositeArgument('c', "config", "Path to the configuration file").Default(kDefaultConfigPath)
       .StoreValue(config_path_).AddValidate(&IsValidFilename).AddIsGood(&IsRegularFile);
@@ -46,22 +45,18 @@ TextUserInterface::TextUserInterface(std::ostream& out, std::ostream& err, std::
       .Default(kDefaultLogPath).AddValidate(&IsValidFilename).AddIsGood(IsNotADirectory);
   parser_.AddStringArgument('l', "location", "Name of the location for which the forecast is requested")
       .Default(ConfigParser::kDefaultLocation);
-  parser_.AddIntArgument('i',
-                         "interval",
-                         kIntervalDescription.c_str())
+  parser_.AddIntArgument('i', "interval", interval_description)
       .Default(ConfigParser::kLowerLimitIntervalSize).AddIsGood(IsGoodIntervalLength);
-  parser_.AddIntArgument('d',
-                         "days-count",
-                         kDaysCountDescription.c_str())
+  parser_.AddIntArgument('d', "days-count", days_count_description)
       .Default(Forecaster::kLowerLimitDaysCount).AddIsGood(IsGoodDaysCount);
-  parser_.AddFlag('v', "verbose", "Print additional information to the terminal.");
-  parser_.AddHelp('h', "help", kHelpText.c_str());
+  parser_.AddFlag('v', "verbose", "Show additional information.");
+  parser_.AddHelp('h', "help", "A program for displaying the weather forecast in the terminal.");
 }
 
 int32_t TextUserInterface::Start(const std::vector<std::string>& args) {
   const std::vector<std::string> potential_config_dirs = GetPotentialConfigDirectories();
 
-  if (!parser_.Parse(args, error_output_)) {
+  if (!parser_.Parse(args, {error_output_.out_stream, error_output_.print_messages})) {
     out_ << parser_.HelpDescription();
     return 1;
   }
@@ -180,7 +175,7 @@ int32_t TextUserInterface::Start(const std::vector<std::string>& args) {
 }
 
 int32_t TextUserInterface::BeginForecast(const ConfigParser& config) {
-  ConditionalOutput background_errors{background_errors_, true};
+  const ConditionalOutput background_errors{background_errors_, true};
   ConditionalOutput background_logs{background_logs_, parser_.GetFlag("verbose")};
 
   WriteCurrentTime(background_logs);
@@ -233,12 +228,12 @@ std::vector<std::string> TextUserInterface::GetPotentialConfigDirectories() {
 
   if (IsWindows()) {
     try {
-      std::string home_path_cmd = std::getenv("userprofile");
+      const std::string home_path_cmd = std::getenv("userprofile");
       potential_config_dirs.push_back(home_path_cmd + "/.config/weather-forecast");
     } catch (const std::exception&) {}
 
     try {
-      std::string home_path_shell = std::getenv("HOME");
+      const std::string home_path_shell = std::getenv("HOME");
       potential_config_dirs.push_back(home_path_shell + "/.config/weather-forecast");
     } catch (const std::exception&) {}
   } else {

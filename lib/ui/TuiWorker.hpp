@@ -24,9 +24,9 @@ class TuiWorker {
   int32_t Run();
 
  private:
-  static const int32_t kMaxWidth = 45;
-  static const int32_t kMaxHeight = 12;
-  static const int32_t kFocusLen = 3;
+  static constexpr int32_t kMaxWidth = 45;
+  static constexpr int32_t kMaxHeight = 12;
+  static constexpr int32_t kFocusLen = 3;
   Forecaster& forecaster_;
   ConditionalOutput error_output_;
   ConditionalOutput log_output_;
@@ -37,7 +37,7 @@ class TuiWorker {
   std::mutex mutex_;
   int32_t result_;
 
-  bool HandleEvent(ftxui::Event event);
+  bool HandleEvent(const ftxui::Event& event);
 
   void RefreshElements();
   void RedrawScreen();
@@ -49,7 +49,7 @@ class TuiWorker {
   static ftxui::Element GetWeatherIcon(int32_t weather_code);
   static ftxui::Element GetUnit(const WeatherTimeUnit& unit, std::string header = "");
   static ftxui::Element GetDay(const WeatherDay& day);
-  ftxui::Element GetCurrentUnit();
+  ftxui::Element GetCurrentUnit() const;
 };
 
 #endif //TUIWORKER_HPP_

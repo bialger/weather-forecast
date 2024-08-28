@@ -2,7 +2,6 @@
 #define UTILS_HPP_
 
 #include <cstdint>
-#include <string_view>
 #include <algorithm>
 #include <vector>
 #include <iostream>
@@ -19,13 +18,19 @@
 #include <Windows.h>
 #endif
 #else
+/* The code provides fake function definitions for Windows console-related
+ * functions when the code is being compiled in a non-Windows environment.
+ * This ensures that the code can be compiled and run without errors in such
+ * environments.
+ * The fake functions have minimal functionality and simply return their
+ * input parameters. */
 #define CP_UTF8 0
 #define STD_OUTPUT_HANDLE 0
 #define HANDLE int
-inline int SetConsoleOutputCP(int a);
-inline int SetConsoleCP(int a);
-inline int GetStdHandle(int a);
-inline int SetConsoleTextAttribute(int a, int b);
+inline int SetConsoleOutputCP(int a) { return a; }
+inline int SetConsoleCP(int a) { return a; }
+inline int GetStdHandle(int a) { return a; }
+inline int SetConsoleTextAttribute(int a, int b) { return a + b; }
 #endif
 
 /**\n This function sets the console text color to red. */
@@ -36,7 +41,7 @@ void SetRedColor();
 
 void ResetColor();
 
-/**\n This function prints a error message. */
+/**\n This function prints an error message. */
 
 void DisplayError(const std::string& message, ConditionalOutput error_output);
 
@@ -79,11 +84,11 @@ void WriteStringToStream(const std::string& content, std::ostream& target);
 
 std::vector<std::string> Split(const std::string& str);
 
-/**\n This function returns average value of the std::vector. */
+/**\n This function returns the average value of the std::vector. */
 
 template<typename T, typename U = double>
 U CountAverage(const std::vector<T>& values) {
-  static_assert(std::is_arithmetic<std::decay_t<decltype(*values.begin())>>::value,
+  static_assert(std::is_arithmetic_v<std::decay_t<decltype(*values.begin())>>,
                 "Can only average arithmetic values");
   return static_cast<U>(std::accumulate(values.begin(), values.end(), static_cast<U>(0)) / values.size());
 }
@@ -92,10 +97,10 @@ U CountAverage(const std::vector<T>& values) {
 
 template<class InputIt, class T = typename std::iterator_traits<InputIt>::value_type>
 T MostCommon(InputIt begin, InputIt end) {
-  std::map<T, int> counts;
+  std::map<T, int32_t> counts;
 
   for (InputIt it = begin; it != end; ++it) {
-    if (counts.find(*it) != counts.end()) {
+    if (counts.contains(*it)) {
       ++counts[*it];
     } else {
       counts[*it] = 1;
@@ -112,7 +117,7 @@ T MostCommon(InputIt begin, InputIt end) {
 
 std::string GetStringCurrentTime();
 
-/**\n This function writes the current time to conditional stream. */
+/**\n This function writes the current time to a conditional stream. */
 
 void WriteCurrentTime(ConditionalOutput& target);
 

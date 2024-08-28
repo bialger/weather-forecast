@@ -15,7 +15,7 @@ class Forecaster {
   Forecaster(int32_t days_count,
              int32_t location_index,
              const std::vector<std::string>& locations,
-             const std::string& api_key,
+             std::string api_key,
              const std::string& config_dir,
              ConditionalOutput error_output,
              ConditionalOutput log_output);

@@ -1,8 +1,6 @@
 #include <fstream>
 
 #include "JsonCache.hpp"
-#include "lib/utils/utils.hpp"
-#include "lib/utils/utils.hpp"
 
 const json JsonCache::kNotFound = "{}";
 
@@ -15,12 +13,12 @@ JsonCache::JsonCache(const std::string& cache_group, const std::string& common_c
   }
 }
 
-void JsonCache::PutJsonToCache(const std::string& cache_name, const json& data) {
+void JsonCache::PutJsonToCache(const std::string& cache_name, const json& data) const {
   std::ofstream cache_file(GetCacheFilename(cache_name).c_str());
   cache_file << data;
 }
 
-json JsonCache::GetJsonFromCache(const std::string& cache_name) {
+json JsonCache::GetJsonFromCache(const std::string& cache_name) const {
   if (!std::filesystem::is_regular_file(GetCacheFilename(cache_name))) {
     return kNotFound;
   }
@@ -30,6 +28,6 @@ json JsonCache::GetJsonFromCache(const std::string& cache_name) {
   return data;
 }
 
-std::string JsonCache::GetCacheFilename(const std::string& cache_name) {
+std::string JsonCache::GetCacheFilename(const std::string& cache_name) const {
   return cache_dir_ + "/" + cache_name + ".json";
 }

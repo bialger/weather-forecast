@@ -1,8 +1,7 @@
 #include "WeatherForecastIntegrationTestSuite.hpp"
 
-const std::string WeatherForecastIntegrationTestSuite::kExpectedHelp = "weather-forecast\n"
+const std::string WeatherForecastIntegrationTestSuite::kExpectedHelp = "weather-forecast 1.3.6 Ferdinando II de' Medici\n"
                                   "A program for displaying the weather forecast in the terminal.\n"
-                                  "Current version is 1.3.5 Ferdinando II de' Medici.\n"
                                   "\n"
                                   "OPTIONS:\n"
                                   "-l,  --location=<string>:  Name of the location for which the forecast is requested [default = First location in config]\n"
@@ -14,7 +13,7 @@ const std::string WeatherForecastIntegrationTestSuite::kExpectedHelp = "weather-
                                   "-i,  --interval=<int>:  Initial time between weather forecast updates in hours. "
                                   "Should be more than 0 and less than 49. The default value means using the parameter "
                                   "from the configuration file. [default = 0]\n"
-                                  "-v,  --verbose:  Print additional information to the terminal.\n"
+                                  "-v,  --verbose:  Show additional information.\n"
                                   "\n"
                                   "-h,  --help:  Display this help and exit\n";
 

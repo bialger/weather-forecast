@@ -1,5 +1,7 @@
 #include "WeatherTimeUnit.hpp"
 
+#include <utility>
+
 const std::map<int32_t, std::string> WeatherTimeUnit::kWeatherCodeToString = {
     {0, "Clear sky"},
     {1, "Mainly clear"},
@@ -55,7 +57,7 @@ const std::map<std::string, std::string> WeatherTimeUnit::kChargeUnits = {
     {kShownNames.humidity, "%"}
 };
 
-WeatherTimeUnit::WeatherTimeUnit(const std::string& name) : name_(name) {}
+WeatherTimeUnit::WeatherTimeUnit(std::string  name) : name_(std::move(name)) {}
 
 std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
   std::map<std::string, std::string> result;
@@ -71,13 +73,13 @@ std::map<std::string, std::string> WeatherTimeUnit::GetAllAsMap() const {
     uv_level = "Very high";
   }
 
-  std::string str_visibility = std::string(128, '\0');
+  auto str_visibility = std::string(128, '\0');
   std::snprintf(str_visibility.data(), str_visibility.size(), "%.2f", visibility);
-  std::string str_pressure = std::string(128, '\0');
+  auto str_pressure = std::string(128, '\0');
   std::snprintf(str_pressure.data(), str_pressure.size(), "%.1f", pressure);
-  std::string str_uv_index = std::string(128, '\0');
+  auto str_uv_index = std::string(128, '\0');
   std::snprintf(str_uv_index.data(), str_uv_index.size(), "%.2f", uv_index);
-  std::string str_precipitation = std::string(128, '\0');
+  auto str_precipitation = std::string(128, '\0');
   std::snprintf(str_precipitation.data(), str_precipitation.size(), "%.1f", precipitation);
 
   result[kShownNames.weather_code] = kWeatherCodeToString.at(weather_type);
