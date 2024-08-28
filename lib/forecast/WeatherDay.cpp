@@ -62,7 +62,7 @@ WeatherTimeUnit WeatherDay::GetCurrentWeather(const json& forecast) {
     return time_unit;
   }
 
-  int32_t hour = std::stoi(current[kOpenMeteoNames.time].get<std::string>().substr(11, 2));
+  const int32_t hour = std::stoi(current[kOpenMeteoNames.time].get<std::string>().substr(11, 2));
 
   if (hour < 0 || hour >= kHoursInDay) {
     return time_unit;
@@ -89,11 +89,11 @@ bool WeatherDay::SetForecast(const json& forecast, int32_t day_number) {
   }
 
   date_ = daily_values_[kOpenMeteoNames.dates][day_number].get<std::string>();
-  double uv_index = daily_values_[kOpenMeteoNames.uv_index][day_number].get<double>();
+  const double uv_index = daily_values_[kOpenMeteoNames.uv_index][day_number].get<double>();
 
   const size_t start_index = day_number * kHoursInDay;
   const size_t end_index = start_index + kHoursInDay - 1;
-  const size_t kHoursInUnit = kHoursInDay / kUnitsInDay;
+  constexpr size_t kHoursInUnit = kHoursInDay / kUnitsInDay;
 
   for (size_t unit_index = 0; unit_index < kUnitsInDay; ++unit_index) {
     WeatherTimeUnit& unit = units_[unit_index];
@@ -110,7 +110,7 @@ bool WeatherDay::SetForecast(const json& forecast, int32_t day_number) {
     double humidity_summa = 0;
 
     for (size_t i = 0; i < kHoursInUnit; ++i) {
-      size_t element_index = start_index + unit_index * kHoursInUnit + i;
+      const size_t element_index = start_index + unit_index * kHoursInUnit + i;
 
       if (element_index > end_index) {
         return false;

@@ -38,7 +38,7 @@ class WeatherTimeUnit {
   double uv_index{};
   int32_t humidity{};
 
-  explicit WeatherTimeUnit(const std::string& name);
+  explicit WeatherTimeUnit(std::string name);
 
   [[nodiscard]] std::map<std::string, std::string> GetAllAsMap() const;
   [[nodiscard]] std::string GetName() const;

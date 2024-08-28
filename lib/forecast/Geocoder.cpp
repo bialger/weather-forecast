@@ -17,7 +17,7 @@ int32_t Geocoder::SetCoordinates(const json& geocode) {
     return 1;
   }
 
-  std::vector<std::string> positions = Split(
+  const std::vector<std::string> positions = Split(
       geocode["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"].get<std::string>()
   );
 

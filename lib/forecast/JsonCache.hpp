@@ -12,16 +12,16 @@ class JsonCache {
   static const json kNotFound;
 
   JsonCache() = delete;
-  JsonCache(const std::string& cache_group, const std::string& cache_dir);
+  JsonCache(const std::string& cache_group, const std::string& common_cache_dir);
 
-  void PutJsonToCache(const std::string& cache_name, const json& data);
-  json GetJsonFromCache(const std::string& cache_name);
+  void PutJsonToCache(const std::string& cache_name, const json& data) const;
+  json GetJsonFromCache(const std::string& cache_name) const;
 
  private:
   std::string cache_group_;
   std::string cache_dir_;
 
-  std::string GetCacheFilename(const std::string& cache_name);
+  std::string GetCacheFilename(const std::string& cache_name) const;
 };
 
 #endif //JSONCACHE_HPP_

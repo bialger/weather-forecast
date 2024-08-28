@@ -1,4 +1,5 @@
 #include <regex>
+#include <utility>
 
 #include "Forecaster.hpp"
 
@@ -7,17 +8,17 @@
 Forecaster::Forecaster(int32_t days_count,
                        int32_t location_index,
                        const std::vector<std::string>& locations,
-                       const std::string& api_key,
+                       std::string  api_key,
                        const std::string& config_dir,
                        ConditionalOutput error_output,
-                       ConditionalOutput log_output) : geocoder_cache_("geocoder", config_dir),
+                       ConditionalOutput log_output) : locations_(locations),
                                                        days_count_(days_count),
                                                        location_index_(location_index),
-                                                       locations_(locations),
-                                                       api_key_(api_key),
+                                                       api_key_(std::move(api_key)),
+                                                       current_weather_("Now"),
+                                                       geocoder_cache_("geocoder", config_dir),
                                                        error_output_(error_output),
-                                                       log_output_(log_output),
-                                                       current_weather_("Now") {
+                                                       log_output_(log_output) {
   forecast_ = std::vector<WeatherDay>(WeatherDay::kDaysInForecast);
 }
 
@@ -236,7 +237,7 @@ int32_t Forecaster::ProcessPosition(const json& answer) {
   WriteCurrentTime(log_output_);
   log_output_ << "FORECASTER: Processing position\n";
 
-  int32_t result = geocoder_.SetCoordinates(answer);
+  const int32_t result = geocoder_.SetCoordinates(answer);
 
   if (result != 0) {
     DisplayError("Unknown error occurred while geocoding.\n", error_output_);
@@ -256,7 +257,7 @@ int32_t Forecaster::ProcessPosition(const json& answer) {
 
 int32_t Forecaster::ProcessForecast(const json& answer) {
   for (int32_t day_number = 0; day_number < WeatherDay::kDaysInForecast; ++day_number) {
-    bool result = forecast_[day_number].SetForecast(answer, day_number);
+    const bool result = forecast_[day_number].SetForecast(answer, day_number);
 
     if (!result) {
       geocoder_cache_.PutJsonToCache("error", answer);
