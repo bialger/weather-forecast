@@ -1,7 +1,6 @@
 #ifndef TEXTUSERINTERFACE_HPP_
 #define TEXTUSERINTERFACE_HPP_
 
-#include <iostream>
 #include <vector>
 #include <string>
 #include <cstdint>

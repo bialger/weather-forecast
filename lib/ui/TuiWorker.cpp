@@ -37,8 +37,8 @@ TuiWorker::TuiWorker(Forecaster& forecaster, int32_t interval)
     : forecaster_(forecaster),
       error_output_(forecaster.GetErrorOutput()),
       log_output_(forecaster.GetLogOutput()),
-      screen_(ftxui::ScreenInteractive::Fullscreen()),
       interval_(interval),
+      screen_(ftxui::ScreenInteractive::Fullscreen()),
       start_focus_(0),
       result_(0) {
   RefreshElements();
@@ -61,7 +61,7 @@ int32_t TuiWorker::Run() {
     return yframe(vbox(elements_));
   });
 
-  component_renderer |= ftxui::CatchEvent([this](ftxui::Event event) -> bool {
+  component_renderer |= ftxui::CatchEvent([this](const ftxui::Event& event) -> bool {
     return HandleEvent(event);
   });
 
@@ -74,7 +74,7 @@ int32_t TuiWorker::Run() {
   return result_;
 }
 
-bool TuiWorker::HandleEvent(ftxui::Event event) {
+bool TuiWorker::HandleEvent(const ftxui::Event& event) {
   if (event == ftxui::Event::Character('+')) {
     result_ = ReloadScreen(Action::kAddLine);
   } else if (event == ftxui::Event::Character('-')) {
@@ -123,7 +123,7 @@ int32_t TuiWorker::ReloadScreen(Action action) {
   WriteCurrentTime(log_output_);
   log_output_ << "TUI: Reloading screen with action ";
 
-  int32_t result;
+  int32_t result = 0;
 
   switch (action) {
     case Action::kAddLine: {
@@ -160,10 +160,6 @@ int32_t TuiWorker::ReloadScreen(Action action) {
 
       result = forecaster_.ObtainForecast();
 
-      if (result != 0) {
-        return result;
-      }
-
       break;
     }
     case Action::kNext: {
@@ -171,20 +167,12 @@ int32_t TuiWorker::ReloadScreen(Action action) {
 
       result = forecaster_.SwapToNext();
 
-      if (result != 0) {
-        return result;
-      }
-
       break;
     }
     case Action::kPrev: {
       log_output_ << "Prev\n";
 
       result = forecaster_.SwapToPrev();
-
-      if (result != 0) {
-        return result;
-      }
 
       break;
     }
@@ -209,7 +197,7 @@ void TuiWorker::RefreshElements() {
 
   elements_.clear();
   elements_.push_back(GetCurrentUnit());
-  std::vector<WeatherDay> forecast = forecaster_.GetForecast();
+  const std::vector<WeatherDay> forecast = forecaster_.GetForecast();
 
   WriteCurrentTime(log_output_);
   log_output_ << "TUI: Forecast size: " << forecast.size() << "\n";
@@ -234,7 +222,7 @@ void TuiWorker::FocusNext() {
   WriteCurrentTime(log_output_);
   log_output_ << "TUI: Focus switched to the next element from " << start_focus_;
 
-  size_t forecast_days = forecaster_.GetForecast().size();
+  const size_t forecast_days = forecaster_.GetForecast().size();
 
   if (start_focus_ + kFocusLen < forecast_days) {
     ++start_focus_;
@@ -269,10 +257,13 @@ ftxui::Element TuiWorker::GetUnit(const WeatherTimeUnit& unit, std::string heade
   std::map<std::string, std::string> output_unit = unit.GetAllAsMap();
   std::vector<ftxui::Element> lines{};
   header = header.empty() ? unit.GetName() : header;
-  int32_t width = header.empty() ? kMaxWidth : (2 * kMaxWidth);
+  const int32_t width = header.empty() ? kMaxWidth : (2 * kMaxWidth);
 
   for (const auto& [name, value] : output_unit) {
-    lines.push_back(ftxui::text(name + ": " + value));
+    std::string label_name = name;
+    label_name.append(": ");
+    label_name.append(value);
+    lines.push_back(ftxui::text(label_name));
   }
 
   return ftxui::vbox({ftxui::hbox({ftxui::filler(), ftxui::text(header), ftxui::filler()}), ftxui::separator(),
@@ -293,6 +284,6 @@ ftxui::Element TuiWorker::GetDay(const WeatherDay& day) {
       | size(ftxui::WIDTH, ftxui::EQUAL, kMaxWidth * 4);;
 }
 
-ftxui::Element TuiWorker::GetCurrentUnit() {
+ftxui::Element TuiWorker::GetCurrentUnit() const {
   return GetUnit(forecaster_.GetCurrentWeather(), forecaster_.GetLocation() + ", " + forecaster_.GetLastForecastTime());
 }
